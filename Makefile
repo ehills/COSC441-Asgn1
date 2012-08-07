@@ -1,7 +1,7 @@
 CC = gcc
 CFLAGS = -c -Wall -o3
-LDFLAGS =
-SOURCES = master.c worker.c reader.c writer.c disc.c
+LDFLAGS = -pthread
+SOURCES = master.c worker.c reader.c writer.c disc.c mylib.c
 OBJECTS = $(SOURCES:.c=.o)
 EXECUTABLE = simulation
 
@@ -11,4 +11,4 @@ $(EXECUTABLE): $(OBJECTS)
 	$(CC) $(LDFLAGS) $(OBJECTS) -o $@
 
 clean:
-	rm -rf *o $(EXECUTABLE)
+	rm -rf *.o $(EXECUTABLE)
