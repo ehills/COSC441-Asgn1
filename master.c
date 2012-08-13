@@ -18,9 +18,6 @@
 #include "disc.h"
 #include "worker.h"
 
-pthread_mutex_t mutex1 = PTHREAD_MUTEX_INITIALIZER;
-int counter = 0;
-
 /*
  * Prints usage of program.
  */
@@ -34,20 +31,6 @@ usage(void)
     printf("\ne.g.\t./simulation -D 16 -W 16 -L 125000\n");
 }
 
-/* Example mutexed function */
-void *
-example_function(void *dummyPtr)
-{
-    pthread_mutex_lock(&mutex1);
-    printf("Thread number %ld has the lock.\n", pthread_self());
-    counter++;
-    pthread_mutex_unlock(&mutex1);
-
-    /* why do i have to return? I think its because a threaded function must 
-     * return as its the same as the thread exiting? 
-    */
-    return 0;
-}
 
 /* 
  * Executes main thread. 
@@ -108,8 +91,6 @@ main(int argc, char **argv)
     /* Now that all threads are complete I can print the final result.     */
     /* Without the join I could be printing a value before all the threads */
     /* have been completed.                                                */
-
-    printf("Final counter value: %d\n", counter);
 
     /* Create D queues */
     /* start d disc threads */

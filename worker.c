@@ -12,6 +12,7 @@
 #include <pthread.h>
 #include "mylib.h"
 #include "master.h"
+#include "disc.h"
 
 pthread_t *worker_thread_id;
 
@@ -25,7 +26,7 @@ create_worker_threads(int num_threads)
     worker_thread_id = emalloc(sizeof (pthread_t) * num_threads);
 
     for(i=0; i < num_threads; i++) {
-        if (pthread_create(&worker_thread_id[i], NULL, example_function, NULL) != 0) {
+        if (pthread_create(&worker_thread_id[i], NULL, listen, NULL) != 0) {
             perror("Cannot create thread.");
             return -1;
         }   
