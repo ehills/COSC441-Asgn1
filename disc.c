@@ -36,7 +36,8 @@ read_monitor()
     printf("request time is %ld\n", request_time);
     receipt_time = max(request_time, receipt_time);
     printf("New receipt time is %ld\n", receipt_time);
-    completion_time = 10 + (12*drand48());
+    completion_time += 10 + (12*drand48());
+    printf("Completed at %ld\n", completion_time);
 
     return 0;
 }
@@ -45,9 +46,12 @@ int
 write_monitor()
 {
     printf("Buffer address is %p\n", buffer);
+    printf("Block number is %ld\n", block_number);
     printf("request time is %ld\n", request_time);
-    printf("receipt time is %ld\n", receipt_time);
-    printf("completion time is %ld\n", completion_time);
+    receipt_time = max(request_time, receipt_time);
+    printf("New receipt time is %ld\n", receipt_time);
+    completion_time += 10 + (12*drand48());
+    printf("Completed at %ld\n", completion_time);
 
     return 0;
 }
