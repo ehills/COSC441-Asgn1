@@ -63,7 +63,9 @@ void *
 listen(void *command)
 {
     
-    if (rando%2 == READ) {
+    // TODO: read queue for disk, depending on message, read or write.
+
+    if (get_job(job_queue) == READ) {
         pthread_mutex_lock(&read_mutex);
         printf("i: %d\n",rando);
         printf("Thread %ld has the read lock.\n", pthread_self());
@@ -71,7 +73,7 @@ listen(void *command)
         read_counter++;
         rando++;
         pthread_mutex_unlock(&read_mutex);
-    } else if (rando%2 == WRITE) {
+    } else if (get_job(job_queue) == WRITE) {
         pthread_mutex_lock(&read_mutex);
         printf("i: %d\n",rando);
         printf("Thread %ld has the write lock.\n", pthread_self());
