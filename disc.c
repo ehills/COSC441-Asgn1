@@ -28,15 +28,28 @@ unsigned long completion_time;
 #define READ 0
 #define WRITE 1
 
+struct per_disk_file_system {
+
+   unsigned long F;
+   unsigned long f;
+   unsigned long b;
+   unsigned long q;
+   unsigned long r;
+
+};
+
 int
 read_monitor()
 {
     printf("Buffer address is %p\n", buffer);
     printf("Block number is %ld\n", block_number);
     printf("request time is %ld\n", request_time);
+
     receipt_time = max(request_time, receipt_time);
-    printf("New receipt time is %ld\n", receipt_time);
     completion_time += 10 + (12*drand48());
+    /*TODO add completion time its own clock time */
+
+    printf("New receipt time is %ld\n", receipt_time);
     printf("Completed at %ld\n", completion_time);
 
     return 0;
@@ -62,9 +75,11 @@ int rando = 1;
 void *
 listen(void *command)
 {
+
+    // Create filesystem for disk thread
     
     // TODO: read queue for disk, depending on message, read or write.
-
+    // while true: ?
     if (get_job(job_queue) == READ) {
         pthread_mutex_lock(&read_mutex);
         printf("i: %d\n",rando);
@@ -81,29 +96,10 @@ listen(void *command)
         write_counter++;
         rando++;
         pthread_mutex_unlock(&read_mutex);
+    } else { // quit
+        return 0;
     }
-    /* why do i have to return? I think its because a threaded function must 
-     *      * return as its the same as the thread exiting? 
-     *          */
+
     return 0;
 }
 
-/* 
- * Will create disk threads
- */
-int
-create_disk_threads(int num_threads) 
-{
-    int i;
-
-    disk_thread_id = emalloc((sizeof(pthread_t)) * num_threads);
-
-    for(i=0; i < num_threads; i++) {
-        if (pthread_create(&disk_thread_id[i], NULL, listen, NULL) != 0) {
-            perror("Cannot create thread.");
-            return -1;
-        }   
-        fprintf(stderr, "Created disk thread:\t%ld\n", disk_thread_id[i]);
-    } 
-    return 0;
-}
