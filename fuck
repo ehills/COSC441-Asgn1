@@ -1,0 +1,153 @@
+making disk threads
+Created disk thread:	140317232498432
+Created disk thread:	140317224105728
+Created disk thread:	140317215713024
+Created disk thread:	140317207320320
+Created disk thread:	140317198927616
+Created disk thread:	140317190534912
+Created disk thread:	140317182142208
+Created disk thread:	140317173749504
+Created disk thread:	140317165356800
+Created disk thread:	140317156964096
+Created disk thread:	140317148571392
+Created disk thread:	140317140178688
+Created disk thread:	140317131785984
+Created disk thread:	140317123393280
+Created disk thread:	140317115000576
+Created disk thread:	140317106607872
+
+Disc Threads Created: 16
+
+Created worker thread:	140317098215168
+Created worker thread:	140317089822464
+Created worker thread:	140317081429760
+Created worker thread:	140317073037056
+Created worker thread:	140317064644352
+Created worker thread:	140317056251648
+Created worker thread:	140317047858944
+Created worker thread:	140317039466240
+Created worker thread:	140317031073536
+Created worker thread:	140317022680832
+Created worker thread:	140317014288128
+Created worker thread:	140317005895424
+Created worker thread:	140316997502720
+Created worker thread:	140316989110016
+Created worker thread:	140316980717312
+Created worker thread:	140316972324608
+
+Workers Created: 16
+
+
+READ	request time: 0	receipt time: 0	completion time: 11
+
+
+WRITE	request time: 0	receipt time: 11	completion time: 24
+
+
+Worker threads finished: 16
+Sending QUIT message to disc 140317232498432
+Sending QUIT message to disc 140317224105728
+Sending QUIT message to disc 140317215713024
+Sending QUIT message to disc 140317207320320
+Sending QUIT message to disc 140317198927616
+Sending QUIT message to disc 140317190534912
+Sending QUIT message to disc 140317182142208
+Sending QUIT message to disc 140317173749504
+Sending QUIT message to disc 140317165356800
+Sending QUIT message to disc 140317156964096
+Sending QUIT message to disc 140317148571392
+Sending QUIT message to disc 140317140178688
+Sending QUIT message to disc 140317131785984
+Sending QUIT message to disc 140317123393280
+Sending QUIT message to disc 140317115000576
+Sending QUIT message to disc 140317106607872
+
+READ	request time: 0	receipt time: 24	completion time: 34
+
+
+WRITE	request time: 0	receipt time: 34	completion time: 48
+
+
+READ	request time: 0	receipt time: 48	completion time: 66
+
+
+WRITE	request time: 0	receipt time: 66	completion time: 84
+
+
+READ	request time: 0	receipt time: 84	completion time: 103
+
+
+WRITE	request time: 0	receipt time: 103	completion time: 113
+
+
+READ	request time: 0	receipt time: 113	completion time: 130
+
+
+WRITE	request time: 0	receipt time: 130	completion time: 141
+
+
+READ	request time: 0	receipt time: 141	completion time: 158
+
+
+WRITE	request time: 0	receipt time: 158	completion time: 177
+
+
+READ	request time: 0	receipt time: 177	completion time: 189
+
+
+WRITE	request time: 0	receipt time: 189	completion time: 204
+
+
+READ	request time: 0	receipt time: 204	completion time: 220
+
+
+WRITE	request time: 0	receipt time: 220	completion time: 233
+
+
+READ	request time: 0	receipt time: 233	completion time: 251
+
+
+WRITE	request time: 0	receipt time: 251	completion time: 265
+
+
+READ	request time: 0	receipt time: 265	completion time: 285
+
+
+WRITE	request time: 0	receipt time: 285	completion time: 299
+
+
+READ	request time: 0	receipt time: 299	completion time: 315
+
+
+WRITE	request time: 0	receipt time: 315	completion time: 330
+
+
+READ	request time: 0	receipt time: 330	completion time: 346
+
+
+WRITE	request time: 0	receipt time: 346	completion time: 364
+
+
+READ	request time: 0	receipt time: 364	completion time: 376
+
+
+WRITE	request time: 0	receipt time: 376	completion time: 395
+
+
+READ	request time: 0	receipt time: 395	completion time: 415
+
+
+WRITE	request time: 0	receipt time: 415	completion time: 434
+
+
+READ	request time: 0	receipt time: 434	completion time: 444
+
+
+WRITE	request time: 0	receipt time: 444	completion time: 465
+
+
+READ	request time: 0	receipt time: 465	completion time: 479
+
+
+WRITE	request time: 0	receipt time: 479	completion time: 489
+
