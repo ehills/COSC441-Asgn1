@@ -1,3 +1,4 @@
+/* FIXME FIXME FIXME TODO TODO. Looks like when you send the QUIT messages to the disc that when it doesnt work only the first one gets processed. seems to just sit there. so either workds properly or only works for the first one then dies. very random! */
 /**
  *
  * File:		master.c
@@ -19,6 +20,7 @@
 #include "worker.h"
 
 disc_container *discs;
+pthread_mutexattr_t attribute;
 
 /**
  * Check circular buffer is full
@@ -37,13 +39,14 @@ int is_cb_empty(circular_buffer cbuf) {
 
 /**
  * Add job into circular buffer.
- * FIXME some fucking how it gets the lock when it is locked
  */
 int cbuffer_add(job *entry, disc_container *disc) {
     int end;
     pthread_mutex_lock(&disc->write_lock);
+    fprintf(stderr,"LOCK pointer: %ld\n",(long)&(disc->write_lock));
+    (disc->write_count)++;
     
-    fprintf(stdout, "Got write lock disc: %ld\n",disc->thread_id); 
+    fprintf(stderr, "Adding job to disc: %ld\n",disc->thread_id); 
 
     if (is_cb_full(disc->cbuf)) {
         pthread_mutex_unlock(&disc->write_lock);
@@ -54,7 +57,9 @@ int cbuffer_add(job *entry, disc_container *disc) {
 
     disc->cbuf.jobs[end] = entry;
     disc->cbuf.count++;
-    fprintf(stdout, "Unlocked write lock disc: %ld\n",disc->thread_id); 
+
+    (disc->write_count)--;
+    fprintf(stderr,"UNLOCK pointer: %ld\nfinished write lock count: %d\n",(long)&(disc->write_lock),disc->write_count);
     pthread_mutex_unlock(&(disc->write_lock));
     return 0;
 }
@@ -66,11 +71,18 @@ job *cbuffer_get_job(disc_container *disc) {
     job *message;
 
     pthread_mutex_lock(&disc->read_lock);
-    fprintf(stdout, "Got read lock disc: %ld\n",disc->thread_id); 
+
+    fprintf(stderr,"LOCK pointer: %ld\n",(long)&(disc->read_lock));
+    (disc->read_count)++;
+    fprintf(stderr, "Reading job from disc: %ld\n",disc->thread_id); 
+
     message = disc->cbuf.jobs[disc->cbuf.start];
     disc->cbuf.start = (disc->cbuf.start + 1) % CBUF_SIZE;
     disc->cbuf.count--;
-    fprintf(stdout, "Unlocked read lock disc: %ld\n",disc->thread_id); 
+
+    (disc->read_count)--;
+    fprintf(stderr,"UNLOCK pointer: %ld\nfinished read lock count: %d\n",(long)&(disc->read_lock),disc->read_count);
+
     pthread_mutex_unlock(&disc->read_lock);
     return message;
 
@@ -105,13 +117,15 @@ create_disk_threads(int num_threads)
         /* Initialise cbuf */
         discs[i].cbuf.start = 0;
         discs[i].cbuf.count = 0;
+        discs[i].write_count = 0;
+        discs[i].read_count = 0;
 
         /* Initilaise read/write locks */
-        if (pthread_mutex_init(&(discs[i].read_lock), PTHREAD_MUTEX_ERRORCHECK) != 0) {
+        if (pthread_mutex_init(&(discs[i].read_lock), &attribute) != 0) {
             perror("Cannot initiliase lock");
             return -1;
         }
-        if (pthread_mutex_init(&(discs[i].write_lock), PTHREAD_MUTEX_ERRORCHECK) != 0) {
+        if (pthread_mutex_init(&(discs[i].write_lock), &attribute) != 0) {
             perror("Cannot initiliase lock");
             return -1;
         }
@@ -123,7 +137,7 @@ create_disk_threads(int num_threads)
         }   
         fprintf(stderr, "Created disk thread:\t%ld\n", discs[i].thread_id);
     }
-    fprintf(stderr,"\nDisc Threads Created: %d\n\n",i);
+    fprintf(stdout,"\nDisc Threads Created: %d\n\n",i);
 
     return 0;
 }
@@ -139,6 +153,7 @@ main(int argc, char **argv)
     int num_worker_threads = atoi(argv[2]);
     pthread_t worker_thread_id[num_worker_threads]; 
     int num_iterations = atoi(argv[3]);
+    pthread_mutexattr_settype(&attribute, PTHREAD_MUTEX_ERRORCHECK);
     job quit_job;
     quit_job.message = QUIT;
     int j;
@@ -160,21 +175,21 @@ main(int argc, char **argv)
         }   
         fprintf(stderr, "Created worker thread:\t%ld\n", worker_thread_id[j]);
     }   
-    fprintf(stderr,"\nWorkers Created: %d\n\n", j);
+    fprintf(stdout,"\nWorkers Created: %d\n\n", j);
 
     for(j=0; j < num_worker_threads; j++) {
         pthread_join(worker_thread_id[j], NULL); 
     }
-    fprintf(stderr,"\nWorker threads finished: %d\n",j);
+    fprintf(stdout,"\nWorker threads finished: %d\n",j);
 
     for(j=0; j < num_disks; j++) {
+        fprintf(stdout,"Sending QUIT message to disc %ld\n", discs[j].thread_id);
         cbuffer_add(&quit_job,&discs[j]); 
-        fprintf(stderr,"Sending QUIT message to disc %ld\n", discs[j].thread_id);
     }
 
     for(j=0; j < num_disks; j++) {
+        fprintf(stdout,"\nDisc Thread %ld quit. Total: %d\n", discs[j].thread_id,j);
         pthread_join(discs[j].thread_id, NULL); 
-        fprintf(stderr,"\nDisc Thread %ld quit. Total: %d\n", discs[j].thread_id,j);
     }
 
     printf("Num disks: %d\nNum worker threads: %d\nNum iterations: %d\n"

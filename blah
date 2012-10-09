@@ -1,0 +1,557 @@
+making disk threads
+Created disk thread:	140546569115392
+Created disk thread:	140546560722688
+Created disk thread:	140546552329984
+Created disk thread:	140546543937280
+Created disk thread:	140546535544576
+Created disk thread:	140546527151872
+Created disk thread:	140546518759168
+Created disk thread:	140546510366464
+Created disk thread:	140546501973760
+Created disk thread:	140546493581056
+Created disk thread:	140546485188352
+Created disk thread:	140546476795648
+Created disk thread:	140546468402944
+Created disk thread:	140546460010240
+Created disk thread:	140546451617536
+Created disk thread:	140546443224832
+Created worker thread:	140546434828032
+Created worker thread:	140546426435328
+Created worker thread:	140546418042624
+Created worker thread:	140546409649920
+Created worker thread:	140546401257216
+Created worker thread:	140546392864512
+Created worker thread:	140546384471808
+Created worker thread:	140546376079104
+Created worker thread:	140546367686400
+Created worker thread:	140546359293696
+Created worker thread:	140546350900992
+Created worker thread:	140546342508288
+Created worker thread:	140546334115584
+Created worker thread:	140546325722880
+Created worker thread:	140546317330176
+Created worker thread:	140546308937472
+LOCK pointer: 39772232
+Adding job to disc: 140546569115392
+UNLOCK pointer: 39772232
+write lock count: 0
+LOCK pointer: 39772232
+Adding job to disc: 140546569115392
+UNLOCK pointer: 39772232
+write lock count: 0
+LOCK pointer: 39772232
+Adding job to disc: 140546569115392
+UNLOCK pointer: 39772232
+write lock count: 0
+LOCK pointer: 39772232
+Adding job to disc: 140546569115392
+UNLOCK pointer: 39772232
+write lock count: 0
+LOCK pointer: 39772232
+Adding job to disc: 140546569115392
+UNLOCK pointer: 39772232
+write lock count: 0
+LOCK pointer: 39772232
+Adding job to disc: 140546569115392
+UNLOCK pointer: 39772232
+write lock count: 0
+LOCK pointer: 39772232
+Adding job to disc: 140546569115392
+UNLOCK pointer: 39772232
+write lock count: 0
+LOCK pointer: 39772232
+Adding job to disc: 140546569115392
+UNLOCK pointer: 39772232
+write lock count: 0
+LOCK pointer: 39772232
+Adding job to disc: 140546569115392
+UNLOCK pointer: 39772232
+write lock count: 0
+LOCK pointer: 39772232
+Adding job to disc: 140546569115392
+UNLOCK pointer: 39772232
+write lock count: 0
+LOCK pointer: 39772232
+Adding job to disc: 140546569115392
+UNLOCK pointer: 39772232
+write lock count: 0
+LOCK pointer: 39772232
+Adding job to disc: 140546569115392
+UNLOCK pointer: 39772232
+write lock count: 0
+LOCK pointer: 39772184
+Reading job from disc: 140546569115392
+UNLOCK pointer: 39772184
+read lock count: 0
+
+READ	request time: 0	receipt time: 0	completion time: 16
+
+LOCK pointer: 39772184
+Reading job from disc: 140546569115392
+UNLOCK pointer: 39772184
+read lock count: 0
+
+WRITE	request time: 0	receipt time: 16	completion time: 26
+
+LOCK pointer: 39772184
+Reading job from disc: 140546569115392
+UNLOCK pointer: 39772184
+read lock count: 0
+
+READ	request time: 0	receipt time: 26	completion time: 36
+
+LOCK pointer: 39772184
+Reading job from disc: 140546569115392
+UNLOCK pointer: 39772184
+read lock count: 0
+
+WRITE	request time: 0	receipt time: 36	completion time: 55
+
+LOCK pointer: 39772184
+Reading job from disc: 140546569115392
+UNLOCK pointer: 39772184
+read lock count: 0
+
+READ	request time: 0	receipt time: 55	completion time: 76
+
+LOCK pointer: 39772184
+Reading job from disc: 140546569115392
+UNLOCK pointer: 39772184
+read lock count: 0
+
+WRITE	request time: 0	receipt time: 76	completion time: 87
+
+LOCK pointer: 39772184
+Reading job from disc: 140546569115392
+UNLOCK pointer: 39772184
+read lock count: 0
+
+READ	request time: 0	receipt time: 87	completion time: 107
+
+LOCK pointer: 39772184
+Reading job from disc: 140546569115392
+UNLOCK pointer: 39772184
+read lock count: 0
+
+WRITE	request time: 0	receipt time: 107	completion time: 126
+
+LOCK pointer: 39772184
+Reading job from disc: 140546569115392
+UNLOCK pointer: 39772184
+read lock count: 0
+
+READ	request time: 0	receipt time: 126	completion time: 137
+
+LOCK pointer: 39772184
+Reading job from disc: 140546569115392
+UNLOCK pointer: 39772184
+read lock count: 0
+
+WRITE	request time: 0	receipt time: 137	completion time: 150
+
+LOCK pointer: 39772184
+Reading job from disc: 140546569115392
+UNLOCK pointer: 39772184
+read lock count: 0
+
+READ	request time: 0	receipt time: 150	completion time: 160
+
+LOCK pointer: 39772184
+Reading job from disc: 140546569115392
+UNLOCK pointer: 39772184
+read lock count: 0
+
+WRITE	request time: 0	receipt time: 160	completion time: 174
+
+LOCK pointer: 39772232
+Adding job to disc: 140546569115392
+UNLOCK pointer: 39772232
+write lock count: 0
+LOCK pointer: 39772232
+Adding job to disc: 140546569115392
+UNLOCK pointer: 39772232
+write lock count: 0
+LOCK pointer: 39772232
+Adding job to disc: 140546569115392
+UNLOCK pointer: 39772232
+write lock count: 0
+LOCK pointer: 39772232
+Adding job to disc: 140546569115392
+UNLOCK pointer: 39772232
+write lock count: 0
+LOCK pointer: 39772232
+Adding job to disc: 140546569115392
+UNLOCK pointer: 39772232
+write lock count: 0
+LOCK pointer: 39772232
+Adding job to disc: 140546569115392
+UNLOCK pointer: 39772232
+write lock count: 0
+LOCK pointer: 39772232
+Adding job to disc: 140546569115392
+UNLOCK pointer: 39772232
+write lock count: 0
+LOCK pointer: 39772232
+Adding job to disc: 140546569115392
+UNLOCK pointer: 39772232
+write lock count: 0
+LOCK pointer: 39772232
+Adding job to disc: 140546569115392
+UNLOCK pointer: 39772232
+write lock count: 0
+LOCK pointer: 39772232
+Adding job to disc: 140546569115392
+UNLOCK pointer: 39772232
+write lock count: 0
+LOCK pointer: 39772232
+Adding job to disc: 140546569115392
+UNLOCK pointer: 39772232
+write lock count: 0
+LOCK pointer: 39772232
+Adding job to disc: 140546569115392
+UNLOCK pointer: 39772232
+write lock count: 0
+LOCK pointer: 39772232
+Adding job to disc: 140546569115392
+UNLOCK pointer: 39772232
+write lock count: 0
+LOCK pointer: 39772232
+Adding job to disc: 140546569115392
+UNLOCK pointer: 39772232
+write lock count: 0
+LOCK pointer: 39772232
+Adding job to disc: 140546569115392
+UNLOCK pointer: 39772232
+write lock count: 0
+LOCK pointer: 39772232
+Adding job to disc: 140546569115392
+UNLOCK pointer: 39772232
+write lock count: 0
+LOCK pointer: 39772232
+Adding job to disc: 140546569115392
+UNLOCK pointer: 39772232
+write lock count: 0
+LOCK pointer: 39772232
+Adding job to disc: 140546569115392
+UNLOCK pointer: 39772232
+write lock count: 0
+LOCK pointer: 39772232
+Adding job to disc: 140546569115392
+UNLOCK pointer: 39772232
+write lock count: 0
+LOCK pointer: 39772232
+Adding job to disc: 140546569115392
+UNLOCK pointer: 39772232
+write lock count: 0
+LOCK pointer: 39772232
+Adding job to disc: 140546569115392
+UNLOCK pointer: 39772232
+write lock count: 0
+LOCK pointer: 39772232
+Adding job to disc: 140546569115392
+UNLOCK pointer: 39772232
+write lock count: 0
+LOCK pointer: 39772232
+Adding job to disc: 140546569115392
+UNLOCK pointer: 39772232
+write lock count: 0
+LOCK pointer: 39772232
+Adding job to disc: 140546569115392
+UNLOCK pointer: 39772232
+write lock count: 0
+LOCK pointer: 39772232
+Adding job to disc: 140546569115392
+UNLOCK pointer: 39772232
+write lock count: 0
+LOCK pointer: 39772584
+Adding job to disc: 140546560722688
+UNLOCK pointer: 39772584
+write lock count: 0
+LOCK pointer: 39772936
+Adding job to disc: 140546552329984
+UNLOCK pointer: 39772936
+write lock count: 0
+LOCK pointer: 39773288
+Adding job to disc: 140546543937280
+UNLOCK pointer: 39773288
+write lock count: 0
+LOCK pointer: 39773640
+Adding job to disc: 140546535544576
+UNLOCK pointer: 39773640
+write lock count: 0
+LOCK pointer: 39773992
+Adding job to disc: 140546527151872
+UNLOCK pointer: 39773992
+write lock count: 0
+LOCK pointer: 39774344
+Adding job to disc: 140546518759168
+UNLOCK pointer: 39774344
+write lock count: 0
+LOCK pointer: 39774696
+Adding job to disc: 140546510366464
+UNLOCK pointer: 39774696
+write lock count: 0
+LOCK pointer: 39775048
+Adding job to disc: 140546501973760
+UNLOCK pointer: 39775048
+write lock count: 0
+LOCK pointer: 39775400
+Adding job to disc: 140546493581056
+UNLOCK pointer: 39775400
+write lock count: 0
+LOCK pointer: 39775752
+Adding job to disc: 140546485188352
+UNLOCK pointer: 39775752
+write lock count: 0
+LOCK pointer: 39775704
+Reading job from disc: 140546485188352
+UNLOCK pointer: 39775704
+read lock count: 0
+LOCK pointer: 39775352
+Reading job from disc: 140546493581056
+UNLOCK pointer: 39775352
+read lock count: 0
+LOCK pointer: 39776104
+Adding job to disc: 140546476795648
+LOCK pointer: 39773944
+Reading job from disc: 140546527151872
+UNLOCK pointer: 39773944
+read lock count: 0
+LOCK pointer: 39773240
+Reading job from disc: 140546543937280
+UNLOCK pointer: 39773240
+read lock count: 0
+UNLOCK pointer: 39776104
+write lock count: 0
+LOCK pointer: 39776456
+Adding job to disc: 140546468402944
+UNLOCK pointer: 39776456
+write lock count: 0
+LOCK pointer: 39776808
+Adding job to disc: 140546460010240
+UNLOCK pointer: 39776808
+write lock count: 0
+LOCK pointer: 39777160
+Adding job to disc: 140546451617536
+UNLOCK pointer: 39777160
+write lock count: 0
+LOCK pointer: 39777512
+Adding job to disc: 140546443224832
+UNLOCK pointer: 39777512
+write lock count: 0
+LOCK pointer: 39777464
+Reading job from disc: 140546443224832
+UNLOCK pointer: 39777464
+read lock count: 0
+LOCK pointer: 39776056
+Reading job from disc: 140546476795648
+UNLOCK pointer: 39776056
+read lock count: 0
+LOCK pointer: 39776760
+Reading job from disc: 140546460010240
+UNLOCK pointer: 39776760
+read lock count: 0
+LOCK pointer: 39777112
+Reading job from disc: 140546451617536
+UNLOCK pointer: 39777112
+read lock count: 0
+LOCK pointer: 39772888
+Reading job from disc: 140546552329984
+UNLOCK pointer: 39772888
+read lock count: 0
+LOCK pointer: 39774648
+Reading job from disc: 140546510366464
+UNLOCK pointer: 39774648
+read lock count: 0
+LOCK pointer: 39776408
+Reading job from disc: 140546468402944
+UNLOCK pointer: 39776408
+read lock count: 0
+LOCK pointer: 39774296
+Reading job from disc: 140546518759168
+UNLOCK pointer: 39774296
+read lock count: 0
+LOCK pointer: 39773592
+Reading job from disc: 140546535544576
+UNLOCK pointer: 39773592
+read lock count: 0
+LOCK pointer: 39772536
+Reading job from disc: 140546560722688
+UNLOCK pointer: 39772536
+read lock count: 0
+LOCK pointer: 39775000
+Reading job from disc: 140546501973760
+UNLOCK pointer: 39775000
+read lock count: 0
+LOCK pointer: 39772184
+Reading job from disc: 140546569115392
+UNLOCK pointer: 39772184
+read lock count: 0
+
+READ	request time: 0	receipt time: 174	completion time: 186
+
+LOCK pointer: 39772184
+Reading job from disc: 140546569115392
+UNLOCK pointer: 39772184
+read lock count: 0
+
+WRITE	request time: 0	receipt time: 186	completion time: 201
+
+LOCK pointer: 39772184
+Reading job from disc: 140546569115392
+UNLOCK pointer: 39772184
+read lock count: 0
+
+READ	request time: 0	receipt time: 201	completion time: 217
+
+LOCK pointer: 39772184
+Reading job from disc: 140546569115392
+UNLOCK pointer: 39772184
+read lock count: 0
+
+WRITE	request time: 0	receipt time: 217	completion time: 230
+
+LOCK pointer: 39772184
+Reading job from disc: 140546569115392
+UNLOCK pointer: 39772184
+read lock count: 0
+
+READ	request time: 0	receipt time: 230	completion time: 248
+
+LOCK pointer: 39772184
+Reading job from disc: 140546569115392
+UNLOCK pointer: 39772184
+read lock count: 0
+
+WRITE	request time: 0	receipt time: 248	completion time: 262
+
+LOCK pointer: 39772184
+Reading job from disc: 140546569115392
+UNLOCK pointer: 39772184
+read lock count: 0
+
+READ	request time: 0	receipt time: 262	completion time: 282
+
+LOCK pointer: 39772184
+Reading job from disc: 140546569115392
+UNLOCK pointer: 39772184
+read lock count: 0
+
+WRITE	request time: 0	receipt time: 282	completion time: 296
+
+LOCK pointer: 39772184
+Reading job from disc: 140546569115392
+UNLOCK pointer: 39772184
+read lock count: 0
+
+READ	request time: 0	receipt time: 296	completion time: 312
+
+LOCK pointer: 39772184
+Reading job from disc: 140546569115392
+UNLOCK pointer: 39772184
+read lock count: 0
+
+WRITE	request time: 0	receipt time: 312	completion time: 327
+
+LOCK pointer: 39772184
+Reading job from disc: 140546569115392
+UNLOCK pointer: 39772184
+read lock count: 0
+
+READ	request time: 0	receipt time: 327	completion time: 343
+
+LOCK pointer: 39772184
+Reading job from disc: 140546569115392
+UNLOCK pointer: 39772184
+read lock count: 0
+
+WRITE	request time: 0	receipt time: 343	completion time: 361
+
+LOCK pointer: 39772184
+Reading job from disc: 140546569115392
+UNLOCK pointer: 39772184
+read lock count: 0
+
+READ	request time: 0	receipt time: 361	completion time: 373
+
+LOCK pointer: 39772184
+Reading job from disc: 140546569115392
+UNLOCK pointer: 39772184
+read lock count: 0
+
+WRITE	request time: 0	receipt time: 373	completion time: 392
+
+LOCK pointer: 39772184
+Reading job from disc: 140546569115392
+UNLOCK pointer: 39772184
+read lock count: 0
+
+READ	request time: 0	receipt time: 392	completion time: 412
+
+LOCK pointer: 39772184
+Reading job from disc: 140546569115392
+UNLOCK pointer: 39772184
+read lock count: 0
+
+WRITE	request time: 0	receipt time: 412	completion time: 431
+
+LOCK pointer: 39772184
+Reading job from disc: 140546569115392
+UNLOCK pointer: 39772184
+read lock count: 0
+
+READ	request time: 0	receipt time: 431	completion time: 441
+
+LOCK pointer: 39772184
+Reading job from disc: 140546569115392
+UNLOCK pointer: 39772184
+read lock count: 0
+
+WRITE	request time: 0	receipt time: 441	completion time: 462
+
+LOCK pointer: 39772184
+Reading job from disc: 140546569115392
+UNLOCK pointer: 39772184
+read lock count: 0
+
+READ	request time: 0	receipt time: 462	completion time: 476
+
+LOCK pointer: 39772184
+Reading job from disc: 140546569115392
+UNLOCK pointer: 39772184
+read lock count: 0
+
+WRITE	request time: 0	receipt time: 476	completion time: 486
+
+LOCK pointer: 39772184
+Reading job from disc: 140546569115392
+UNLOCK pointer: 39772184
+read lock count: 0
+
+READ	request time: 0	receipt time: 486	completion time: 499
+
+LOCK pointer: 39772184
+Reading job from disc: 140546569115392
+UNLOCK pointer: 39772184
+read lock count: 0
+
+WRITE	request time: 0	receipt time: 499	completion time: 509
+
+LOCK pointer: 39772184
+Reading job from disc: 140546569115392
+UNLOCK pointer: 39772184
+read lock count: 0
+
+READ	request time: 0	receipt time: 509	completion time: 527
+
+LOCK pointer: 39772184
+Reading job from disc: 140546569115392
+UNLOCK pointer: 39772184
+read lock count: 0
+
+WRITE	request time: 0	receipt time: 527	completion time: 546
+
+LOCK pointer: 39772184
+Reading job from disc: 140546569115392
+UNLOCK pointer: 39772184
+read lock count: 0

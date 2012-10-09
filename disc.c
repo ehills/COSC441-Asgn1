@@ -61,7 +61,8 @@ disk_listen(disc_container *disc)
                 return 0;
             }
         } else {
-            //fprintf(stderr, "Thread %ld has no messages\n", disc->thread_id);
+//            fprintf(stderr, "disc %ld has no messages\n", disc->thread_id);
+
         }
     }
 }

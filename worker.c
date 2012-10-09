@@ -14,6 +14,7 @@
 #include "mylib.h"
 #include "master.h"
 #include "disc.h"
+#define BUFFER_SIZE 4096
 
 int worker_listen(disc_container *all_discs) {
 
@@ -44,11 +45,11 @@ int worker_listen(disc_container *all_discs) {
 
         // make made up buffers
         // using CBUF_SIZE for convienience. name should be changed
-        in_buffer = emalloc(CBUF_SIZE);
-//        memset(in_buffer, 0, CBUF_SIZE);
+        in_buffer = emalloc(BUFFER_SIZE);
+        memset(in_buffer, 0, BUFFER_SIZE);
 
-        out_buffer = emalloc(CBUF_SIZE);
- //       memset(out_buffer, 0, CBUF_SIZE);
+        out_buffer = emalloc(BUFFER_SIZE);
+        memset(out_buffer, 0, BUFFER_SIZE);
 
 
         if (in_file < out_file) {
@@ -76,7 +77,7 @@ int worker_listen(disc_container *all_discs) {
             write_msg->communication_monitor = write_mon;
 
             // send requests to disc
-            // TODO
+            // TODO --- get file location and then send it to proper disk. hard coded for now
             cbuffer_add(read_msg,&all_discs[0]);
             cbuffer_add(write_msg,&all_discs[0]);
 
