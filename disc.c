@@ -57,7 +57,7 @@ disk_listen(disc_container *disc)
   //              fprintf(stderr, "Disc Thread %ld just read the WRITE command\n", disc->thread_id);
                 disk_write(disc_job->communication_monitor, disc);
             } else if (disc_job->message == QUIT) {
-//                fprintf(stderr, "Disc Thread %ld just read the QUIT command\n", disc->thread_id);
+                fprintf(stderr, "Disc Thread %ld just read the QUIT command\n", disc->thread_id);
                 return 0;
             }
         } else {

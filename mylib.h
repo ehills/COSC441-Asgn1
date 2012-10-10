@@ -44,7 +44,7 @@ typedef struct job_t {
  */
 typedef struct circular_buffer_t {
     int start;
-    int count;
+    int end;
     job *jobs[CBUF_SIZE];
 } circular_buffer;
 
@@ -54,8 +54,6 @@ typedef struct circular_buffer_t {
 typedef struct disc_container_t {
     pthread_t thread_id;
     pthread_mutex_t read_lock;
-    int read_count;
-    int write_count;
     pthread_mutex_t write_lock;
     circular_buffer cbuf;
     long disc_time;
