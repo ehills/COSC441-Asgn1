@@ -44,7 +44,7 @@ typedef struct job_t {
  */
 typedef struct circular_buffer_t {
     int start;
-    int end;
+    int count;
     job *jobs[CBUF_SIZE];
 } circular_buffer;
 
