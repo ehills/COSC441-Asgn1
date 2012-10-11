@@ -15,7 +15,7 @@
 #define QUIT 2
 #define NUMBER_OF_FILES 1000
 #define BLOCK_SIZE_IN_KIB 4
-#define BLOCK_SIZE (4 * 1024)
+#define BLOCK_SIZE (BLOCK_SIZE_IN_KIB * 1024)
 #define BLOCKS_PER_FILE (1000 * 1000 / BLOCK_SIZE_IN_KIB)
 
 extern  void    compute_physical_address(int, int, int *, int *, int);
@@ -49,7 +49,6 @@ typedef struct job_t {
  */
 typedef struct circular_buffer_t {
     int start;
-    int count;
     int end;
     job *jobs[CBUF_SIZE];
 } circular_buffer;

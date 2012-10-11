@@ -95,12 +95,10 @@ create_disk_threads(int num_threads)
         /* Initialise cbuf */
         discs[i].read_cbuf.start = 0;
         discs[i].read_cbuf.end = 0;
-        discs[i].read_cbuf.count = 0;
 
         /* Initialise cbuf */
         discs[i].write_cbuf.start = 0;
         discs[i].write_cbuf.end = 0;
-        discs[i].write_cbuf.count = 0;
 
         /* Initilaise read/write locks */
         if (pthread_mutex_init(&(discs[i].read_lock), &attribute) != 0) {
@@ -128,7 +126,7 @@ int create_worker_threads(int num_threads, int num_disks, int num_iterations) {
 
     workers = emalloc(sizeof(worker) * num_threads);
     for(j=0; j < num_threads; j++) {
-        workers[j].time = 0;
+        workers[j].time = j;
         workers[j].number_of_discs = num_disks;
         workers[j].repetition = num_iterations;
         workers[j].all_discs = discs;
@@ -170,13 +168,14 @@ main(int argc, char **argv)
 
     // send quit message
     for(j=0; j < num_disks; j++) {
-        cbuffer_add(&quit_job,&discs[j].read_cbuf); 
+        cbuffer_add(&quit_job,&discs[j].write_cbuf); 
         fprintf(stdout,"\nsend quit to disc: %d\n",j);
     }
 
     // catch disc threads
     for(j=0; j < num_disks; j++) {
         pthread_join(discs[j].thread_id, NULL); 
+        printf("Actually quit\n");
     }
 
     printf("Num disks: %d\nNum worker threads: %d\nNum iterations: %d\n"
