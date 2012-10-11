@@ -54,16 +54,16 @@ void seed_rand(struct drand48_data *buffer)
 int check_reply(monitor *request, worker *this) {
     while (request->processed == 0) {
         this->time = max(this->time, request->completion_time);      
-        printf("worker: %lu\ntime: %ld\n",(unsigned long)pthread_self(),this->time);
+//        printf("worker: %lu\ntime: %ld\n",(unsigned long)pthread_self(),this->time);
         break;
-        // live free or die hard
     }
-    free(request);
     return 0;
 }
 
+/* live free or die hard */
 int free_messages(job *jobby) {
 
+    //free(jobby->communication_monitor);
     free(jobby);
 
     return 0;
@@ -182,14 +182,19 @@ int worker_listen(worker *worker) {
 
                 pthread_mutex_unlock(&worker->all_discs[what_disc].read_lock);
             }
+            // deal with one file at a time
             check_reply(write_mon, worker);
+            free(write_mon);
             free_messages(write_msg);
             check_reply(read_mon, worker);
+            free(read_mon);
             free_messages(read_msg);
         }
+        free(in_buffer);
+        free(out_buffer);
 
-        printf("Sent write requests for file: %d\n",out_file);
-        printf("Sent read requests for file: %d\n",in_file);
+//        printf("Sent write requests for file: %d\n",out_file);
+ //       printf("Sent read requests for file: %d\n",in_file);
 
         // TODO TODO TODO - maybe not the below solution. may have to do it for each block 
         // checks replies after all blocks for the file have been queued
