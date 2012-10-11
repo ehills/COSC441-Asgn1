@@ -22,7 +22,7 @@ disk_read(monitor *read_monitor, disc_container *this)
 
     block_number = read_monitor->block_number;
 
-    //memset(read_monitor->buffer, 5, BLOCK_SIZE);
+    memset(read_monitor->buffer, 5, BLOCK_SIZE);
 
     /* update disc thread's time */
     this->disc_time = max(this->disc_time, read_monitor->request_time);
@@ -52,7 +52,7 @@ disk_write(monitor *write_monitor, disc_container *this)
 
     block_number = write_monitor->block_number;
 
-   // memset(write_monitor->buffer, 5, BLOCK_SIZE);
+    memset(write_monitor->buffer, 5, BLOCK_SIZE);
 
     /* update disc thread's time */
     this->disc_time = max(this->disc_time, write_monitor->request_time);
@@ -91,8 +91,6 @@ disk_listen(disc_container *disc)
                 disk_read(disc_job->communication_monitor, disc);
             }
             pthread_mutex_unlock(&(disc->read_lock)); 
-        } else {
-  //          printf("Nothing to read\n");
         }
 
         /* Check the write cbuf for requests */
@@ -103,13 +101,9 @@ disk_listen(disc_container *disc)
                 disk_write(disc_job->communication_monitor, disc);
             } else if (disc_job->message == QUIT) {
                 pthread_mutex_unlock(&(disc->write_lock)); 
-                printf("QUITTING\n");
                 return 0;
             }
             pthread_mutex_unlock(&(disc->write_lock)); 
-        } else {
-
-    //        printf("Nothing to write\n");
         }
     }
 }

@@ -116,7 +116,7 @@ create_disk_threads(int num_threads)
             return -1; 
         }   
     }
-    fprintf(stdout,"\nDisc Threads Created: %d\n\n",i);
+    fprintf(stdout,"\nDisc Threads Created: %d\n",i);
 
     return 0;
 }
@@ -136,7 +136,7 @@ int create_worker_threads(int num_threads, int num_disks, int num_iterations) {
             return -1; 
         }   
     }   
-    fprintf(stdout,"\nWorkers Created: %d\n\n", j);
+    fprintf(stdout,"\nWorkers Created: %d\n", j);
     return 0;
 }
 
@@ -166,19 +166,18 @@ main(int argc, char **argv)
     for(j=0; j < num_worker_threads; j++) {
         pthread_join(workers[j].thread_id, NULL); 
     }
-    fprintf(stdout,"\nWorker threads finished: %d\n",j);
+    fprintf(stdout,"\nWorker Threads Finished: %d\n",j);
 
     // send quit message
     for(j=0; j < num_disks; j++) {
         cbuffer_add(&quit_job,&discs[j].write_cbuf); 
-        fprintf(stdout,"\nsend quit to disc: %d\n",j);
     }
 
     // catch disc threads
     for(j=0; j < num_disks; j++) {
         pthread_join(discs[j].thread_id, NULL); 
-        printf("Actually quit\n");
     }
+    printf("Disc Threads Finished: %d\n",j);
 
     printf("Num disks: %d\nNum worker threads: %d\nNum iterations: %d\n"
             , num_disks, num_worker_threads, num_iterations);
