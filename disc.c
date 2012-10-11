@@ -38,7 +38,7 @@ disk_read(monitor *read_monitor, disc_container *this)
     /* store the completion time */
     read_monitor->completion_time = this->disc_time;
 
-    //fprintf(stderr,"\nREAD\tblock: %ld\trequest time: %ld\treceipt time: %ld\tcompletion time: %ld\n\n", block_number, read_monitor->request_time, read_monitor->receipt_time, this->disc_time);
+//    fprintf(stderr,"\nREAD\tdisc: %ld\tblock: %ld\tbuffer: %p\trequest time: %ld\tcompletion time: %ld\n\n", (unsigned long)pthread_self(), block_number, buffer_address, read_monitor->request_time, this->disc_time);
     return 0;
 }
 
@@ -65,7 +65,7 @@ disk_write(monitor *write_monitor, disc_container *this)
     /* store the completion time */
     write_monitor->completion_time = this->disc_time;
 
-   // fprintf(stderr,"\nWRITE\trequest time: %ld\treceipt time: %ld\tcompletion time: %ld\n\n", write_monitor->request_time, write_monitor->receipt_time, this->disc_time);
+  //  fprintf(stderr,"\nWRITE\tdisc: %ld\tblock: %ld\tbuffer: %p\trequest time: %ld\tcompletion time: %ld\n\n", (unsigned long)pthread_self(),block_number, buffer_address, write_monitor->request_time, this->disc_time);
 
     return 0;
 }
@@ -81,14 +81,13 @@ disk_listen(disc_container *disc)
         /* Check the read cbuf for requests */
         if (!is_cb_empty(&disc->read_cbuf)) {
             pthread_mutex_lock(&(disc->read_lock)); 
-                disc_job = cbuffer_get_job(&disc->read_cbuf);
+            disc_job = cbuffer_get_job(&disc->read_cbuf);
             if (disc_job->message == READ) {
                 disk_read(disc_job->communication_monitor, disc);
-            } else if (disc_job->message == QUIT) {
-                pthread_mutex_unlock(&(disc->read_lock)); 
-                return 0;
             }
             pthread_mutex_unlock(&(disc->read_lock)); 
+        } else {
+  //          printf("Nothing to read\n");
         }
 
         /* Check the write cbuf for requests */
@@ -97,9 +96,15 @@ disk_listen(disc_container *disc)
             disc_job = cbuffer_get_job(&disc->write_cbuf);
             if (disc_job->message == WRITE) {
                 disk_write(disc_job->communication_monitor, disc);
+            } else if (disc_job->message == QUIT) {
+                pthread_mutex_unlock(&(disc->write_lock)); 
+                printf("QUITTING\n");
+                return 0;
             }
             pthread_mutex_unlock(&(disc->write_lock)); 
+        } else {
+
+    //        printf("Nothing to write\n");
         }
     }
 }
-
