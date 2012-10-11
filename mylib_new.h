@@ -15,12 +15,13 @@
 #define QUIT 2
 #define NUMBER_OF_FILES 1000
 #define BLOCK_SIZE_IN_KIB 4
-#define BLOCK_SIZE (4 * 1024)
+#define BLOCK_SIZE (BLOCK_SIZE_IN_KIB * 1024)
 #define BLOCKS_PER_FILE (1000 * 1000 / BLOCK_SIZE_IN_KIB)
 
 extern  void    compute_physical_address(int, int, int *, int *, int);
 extern  void    *emalloc(size_t);
 extern  void    *erealloc(void *, size_t);
+
 
 /**
  *  Monitor storing information for disc.
@@ -28,10 +29,11 @@ extern  void    *erealloc(void *, size_t);
 typedef struct monitor_t {
 
     long block_number;
+    char *buffer;
     long request_time;
     long receipt_time;
     long completion_time;
-    char *buffer;
+
 } monitor;
 
 /**
@@ -47,7 +49,6 @@ typedef struct job_t {
  */
 typedef struct circular_buffer_t {
     int start;
-    int count;
     int end;
     job *jobs[CBUF_SIZE];
 } circular_buffer;
@@ -63,6 +64,17 @@ typedef struct disc_container_t {
     circular_buffer read_cbuf;
     circular_buffer write_cbuf;
 } disc_container;
+
+/**
+ * Worker thread
+ */
+typedef struct worker_t {
+    long time; 
+    int number_of_discs;
+    int repetition;
+    pthread_t thread_id;
+    disc_container *all_discs;
+} worker;
 
 extern int   is_cb_full(circular_buffer *);
 extern int   is_cb_empty(circular_buffer *);

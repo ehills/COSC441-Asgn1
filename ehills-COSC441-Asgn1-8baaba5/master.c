@@ -41,14 +41,16 @@ int is_cb_empty(circular_buffer *cbuf) {
 int cbuffer_add(job *entry, circular_buffer *cbuf) {
     //int end;
 
-//    if (is_cb_full(cbuf)) {
- //       return -1;
-  //  }
+    if (is_cb_full(cbuf)) {
+        return -1;
+    }
     
     //end = (disc->cbuf.start + disc->cbuf.count) % CBUF_SIZE;
 
+
     cbuf->jobs[cbuf->end] = entry;
     cbuf->end = (cbuf->end +1) % CBUF_SIZE;
+
 
     return 0;
 }
@@ -162,9 +164,7 @@ main(int argc, char **argv)
 
     // send quit message
     for(j=0; j < num_disks; j++) {
-        printf("deja\n");
         cbuffer_add(&quit_job,&discs[j].read_cbuf); 
-        printf("vu\n");
     }
 
     // catch disc threads

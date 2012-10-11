@@ -28,10 +28,11 @@ extern  void    *erealloc(void *, size_t);
 typedef struct monitor_t {
 
     long block_number;
+    char *buffer;
     long request_time;
     long receipt_time;
     long completion_time;
-    char *buffer;
+
 } monitor;
 
 /**
@@ -56,12 +57,12 @@ typedef struct circular_buffer_t {
  *  Stores all things relating to a disc.
  */
 typedef struct disc_container_t {
-    long disc_time;
     pthread_t thread_id;
     pthread_mutex_t read_lock;
     pthread_mutex_t write_lock;
     circular_buffer read_cbuf;
     circular_buffer write_cbuf;
+    long disc_time;
 } disc_container;
 
 extern int   is_cb_full(circular_buffer *);

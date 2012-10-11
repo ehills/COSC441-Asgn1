@@ -9,14 +9,10 @@
     #define min( a, b ) ( ((a) < (b)) ? (a) : (b) )
 #endif
 
-#define CBUF_SIZE 1024
+#define CBUF_SIZE 4096
 #define READ 0
 #define WRITE 1
 #define QUIT 2
-#define NUMBER_OF_FILES 1000
-#define BLOCK_SIZE_IN_KIB 4
-#define BLOCK_SIZE (4 * 1024)
-#define BLOCKS_PER_FILE (1000 * 1000 / BLOCK_SIZE_IN_KIB)
 
 extern  void    compute_physical_address(int, int, int *, int *, int);
 extern  void    *emalloc(size_t);
@@ -28,10 +24,11 @@ extern  void    *erealloc(void *, size_t);
 typedef struct monitor_t {
 
     long block_number;
+    char *buffer;
     long request_time;
     long receipt_time;
     long completion_time;
-    char *buffer;
+
 } monitor;
 
 /**
@@ -56,16 +53,15 @@ typedef struct circular_buffer_t {
  *  Stores all things relating to a disc.
  */
 typedef struct disc_container_t {
-    long disc_time;
     pthread_t thread_id;
     pthread_mutex_t read_lock;
     pthread_mutex_t write_lock;
-    circular_buffer read_cbuf;
-    circular_buffer write_cbuf;
+    circular_buffer cbuf;
+    long disc_time;
 } disc_container;
 
-extern int   is_cb_full(circular_buffer *);
-extern int   is_cb_empty(circular_buffer *);
-extern int   cbuffer_add(job *, circular_buffer *);
-extern job * cbuffer_get_job(circular_buffer *);
+extern int   is_cb_full(circular_buffer);
+extern int   is_cb_empty(circular_buffer);
+extern int   cbuffer_add(job *, disc_container *);
+extern job * cbuffer_get_job(disc_container *);
 #endif
