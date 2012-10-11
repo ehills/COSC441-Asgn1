@@ -22,6 +22,7 @@ extern  void    compute_physical_address(int, int, int *, int *, int);
 extern  void    *emalloc(size_t);
 extern  void    *erealloc(void *, size_t);
 
+
 /**
  *  Monitor storing information for disc.
  */
@@ -57,13 +58,24 @@ typedef struct circular_buffer_t {
  *  Stores all things relating to a disc.
  */
 typedef struct disc_container_t {
+    long disc_time;
     pthread_t thread_id;
     pthread_mutex_t read_lock;
     pthread_mutex_t write_lock;
     circular_buffer read_cbuf;
     circular_buffer write_cbuf;
-    long disc_time;
 } disc_container;
+
+/**
+ * Worker thread
+ */
+typedef struct worker_t {
+    long time; 
+    int number_of_discs;
+    int repetition;
+    pthread_t thread_id;
+    disc_container *all_discs;
+} worker;
 
 extern int   is_cb_full(circular_buffer *);
 extern int   is_cb_empty(circular_buffer *);

@@ -25,30 +25,37 @@ void compute_physical_address(
     long x;
     if ((file_number >= 0) && (file_number < NUMBER_OF_FILES)) {
         if (0 <= block_number && block_number < BLOCKS_PER_FILE) {
-            x = (long)file_number * BLOCKS_PER_FILE + block_number;
+            x = (long)(file_number * BLOCKS_PER_FILE + block_number);
             *which_disc  = x % number_of_discs;
             *which_block = x / number_of_discs;
         }
     } 
 }
 
-int worker_listen(disc_container *all_discs) {
+void seed_rand(struct drand48_data *buffer)
+{
+    unsigned long seed;
+    seed = (unsigned long)pthread_self();
+    srand48_r(seed, buffer);
+}
 
-    int repetition = 3;  
+int worker_listen(worker *worker) {
+
     int i, b;
-    int number_discs;
-    monitor *read_mon;          /* temp monitor storage */
+    monitor *read_mon;              /* temp monitor storage */
     monitor *write_mon;
-    int in_file = -1;           /* the files */
-    int out_file = -1;
-    char *in_buffer;            /* location for monitors */
-    char *out_buffer;
-    job *read_msg;              /* temp job storage */
-    job *write_msg;
+    int in_file = -1;
+    int out_file = -1;     /* the files */
+    char *in_buffer, *out_buffer;   /* i/o buffers */
+    job *read_msg, *write_msg;       /* temp job storage */
 
     int what_disc = 0;
     int what_block = 0;
 
+    double rand_result;
+    struct drand48_data work_space;
+
+#if 0
     char in_buff1[BLOCK_SIZE];  /* read-ahead buffers */
     char in_buff2[BLOCK_SIZE];
     char in_buff3[BLOCK_SIZE];
@@ -58,18 +65,21 @@ int worker_listen(disc_container *all_discs) {
     char out_buff2[BLOCK_SIZE];
     char out_buff3[BLOCK_SIZE];
     char out_buff4[BLOCK_SIZE];
+#endif
 
-    long thread_time = 0;
-
-    for (i = 0; i < repetition; i++) {
+    seed_rand(&work_space);
+    for (i = 0; i < worker->repetition; i++) {
+        in_file = -1;
+        out_file= -1;
         while (out_file == in_file) {
-            in_file = (int)(drand48() * 1000);
-            out_file = (int)(drand48() * 1000);
+            drand48_r(&work_space, &rand_result);
+            in_file = (int)(rand_result * 1000);
+            printf("in: %d\n",in_file);
+            drand48_r(&work_space, &rand_result);
+            out_file = (int)(rand_result * 1000);
+            printf("out: %d\n",out_file);
         }
 
-        // initiliase monitors
-        read_mon = emalloc(sizeof(monitor)); 
-        write_mon = emalloc(sizeof(monitor)); 
 
         // make made up buffers
         in_buffer = emalloc(BLOCK_SIZE * sizeof(char));
@@ -78,12 +88,10 @@ int worker_listen(disc_container *all_discs) {
         out_buffer = emalloc(BLOCK_SIZE * sizeof (char));
         memset(out_buffer, 0, BLOCK_SIZE);
 
-
-        // TODO need to get actual values
         /* Create read monitor */
-        read_mon->block_number = 1;
+        read_mon = emalloc(sizeof(monitor)); 
         read_mon->buffer = in_buffer;
-        read_mon->request_time = thread_time;
+        read_mon->request_time = worker->time;
 
         /* Create read job. mainly used for original implementation */
         read_msg = emalloc(sizeof(job));
@@ -91,66 +99,70 @@ int worker_listen(disc_container *all_discs) {
         read_msg->communication_monitor = read_mon;
 
         /* Create write monitor */
-        write_mon->block_number = 2;
+        write_mon = emalloc(sizeof(monitor)); 
         write_mon->buffer = out_buffer;
-        write_mon->request_time = thread_time;
+        write_mon->request_time = worker->time;
 
         /* Create write job. mainly used for original implementation */
         write_msg = emalloc(sizeof(job));
         write_msg->message = WRITE;
         write_msg->communication_monitor = write_mon;
 
-        // TODO --- get file location and then send it to proper disk. hard coded for now
-
         /* Procedurally sends requests to respective disc */
         /* Can be moddelled as two input / output threads, possible TODO */
         if (in_file < out_file) {
 
             for (b=0; b < BLOCKS_PER_FILE; b++) {
-                compute_physical_address(in_file, b, &what_disc, &what_block, number_discs);
+                compute_physical_address(in_file, b, &what_disc, &what_block, worker->number_of_discs);
+                pthread_mutex_lock(&worker->all_discs[what_disc].read_lock);
 
-                pthread_mutex_lock(&all_discs[what_disc].read_lock);
+                read_mon->block_number = what_block;
+//                while (cbuffer_add(read_msg,&worker->all_discs[what_disc].read_cbuf) != 0) {
+  //                  continue;
+   //             }
+                cbuffer_add(read_msg,&worker->all_discs[what_disc].read_cbuf);
 
-                cbuffer_add(read_msg,&all_discs[what_disc].read_cbuf);
-
-                pthread_mutex_unlock(&all_discs[what_disc].read_lock);
+                pthread_mutex_unlock(&worker->all_discs[what_disc].read_lock);
             }
-
-
+            printf("Sent read requests for file: %d\n",in_file);
 
             for (b=0; b < BLOCKS_PER_FILE; b++) {
-                compute_physical_address(out_file, b, &what_disc, &what_block, number_discs);
+                compute_physical_address(out_file, b, &what_disc, &what_block, worker->number_of_discs);
 
-                pthread_mutex_lock(&all_discs[what_disc].write_lock);
+                pthread_mutex_lock(&worker->all_discs[what_disc].write_lock);
 
-                cbuffer_add(write_msg,&all_discs[what_disc].write_cbuf);
+                write_mon->block_number = what_block;
+                cbuffer_add(write_msg,&worker->all_discs[what_disc].write_cbuf);
 
-                pthread_mutex_unlock(&all_discs[what_disc].write_lock);
+                pthread_mutex_unlock(&worker->all_discs[what_disc].write_lock);
             }
+            printf("Sent write requests for file: %d\n",out_file);
 
         } else {
 
             for (b=0; b < BLOCKS_PER_FILE; b++) {
-                compute_physical_address(out_file, b, &what_disc, &what_block, number_discs);
+                compute_physical_address(out_file, b, &what_disc, &what_block, worker->number_of_discs);
 
-                pthread_mutex_lock(&all_discs[what_disc].write_lock);
+                pthread_mutex_lock(&worker->all_discs[what_disc].write_lock);
 
-                cbuffer_add(write_msg,&all_discs[what_disc].write_cbuf);
+                write_mon->block_number = what_block;
+                cbuffer_add(write_msg,&worker->all_discs[what_disc].write_cbuf);
 
-                pthread_mutex_unlock(&all_discs[what_disc].write_lock);
+                pthread_mutex_unlock(&worker->all_discs[what_disc].write_lock);
             }
-
-
+            printf("Sent write requests for file: %d\n",out_file);
 
             for (b=0; b < BLOCKS_PER_FILE; b++) {
-                compute_physical_address(in_file, b, &what_disc, &what_block, number_discs);
+                compute_physical_address(in_file, b, &what_disc, &what_block, worker->number_of_discs);
 
-                pthread_mutex_lock(&all_discs[what_disc].read_lock);
+                pthread_mutex_lock(&worker->all_discs[what_disc].read_lock);
 
-                cbuffer_add(read_msg,&all_discs[what_disc].read_cbuf);
+                read_mon->block_number = what_block;
+                cbuffer_add(read_msg,&worker->all_discs[what_disc].read_cbuf);
 
-                pthread_mutex_unlock(&all_discs[what_disc].read_lock);
-        }
+                pthread_mutex_unlock(&worker->all_discs[what_disc].read_lock);
+            }
+            printf("Sent read requests for file: %d\n",in_file);
 
     }
 
