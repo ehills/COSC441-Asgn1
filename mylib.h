@@ -29,10 +29,11 @@ extern  void    *erealloc(void *, size_t);
 typedef struct monitor_t {
 
     long block_number;
-    char *buffer;
     long request_time;
     long receipt_time;
     long completion_time;
+    short processed;
+    char *buffer;
 
 } monitor;
 

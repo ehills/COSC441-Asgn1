@@ -36,6 +36,9 @@ disk_read(monitor *read_monitor, disc_container *this)
     /* store the completion time */
     read_monitor->completion_time = this->disc_time;
 
+    /* set completed flag */
+    read_monitor->processed = 0;
+
 //    fprintf(stderr,"reading\n");
 //    fprintf(stderr,"\nREAD\tdisc: %ld\tblock: %ld\tbuffer: %p\trequest time: %ld\tcompletion time: %ld\n\n", (unsigned long)pthread_self(), block_number, buffer_address, read_monitor->request_time, this->disc_time);
     return 0;
@@ -62,6 +65,9 @@ disk_write(monitor *write_monitor, disc_container *this)
 
     /* store the completion time */
     write_monitor->completion_time = this->disc_time;
+
+    /* set completed flag */
+    write_monitor->processed = 0;
 
   //  fprintf(stderr,"writing\n");
   //  fprintf(stderr,"\nWRITE\tdisc: %ld\tblock: %ld\tbuffer: %p\trequest time: %ld\tcompletion time: %ld\n\n", (unsigned long)pthread_self(),block_number, buffer_address, write_monitor->request_time, this->disc_time);

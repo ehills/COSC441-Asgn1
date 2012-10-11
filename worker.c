@@ -51,8 +51,22 @@ void seed_rand(struct drand48_data *buffer)
 /* then have a queue of replies and process them */
 /* This is still not richards way? gah, I have no idea */
 /* TODO write this in the report and not in the comments */
-int check_reply(monitor *request) {
+int check_reply(monitor *request, worker *this) {
+    while (request->processed == 0) {
+        this->time = max(this->time, request->completion_time);      
+        printf("worker: %lu\ntime: %ld\n",(unsigned long)pthread_self(),this->time);
+        break;
+        // live free or die hard
+    }
+    free(request);
+    return 0;
+}
 
+int free_messages(job *jobby) {
+
+    free(jobby);
+
+    return 0;
 }
 
 /* Threads will start here */
@@ -110,6 +124,7 @@ int worker_listen(worker *worker) {
             read_mon = emalloc(sizeof(monitor)); 
             read_mon->buffer = in_buffer;
             read_mon->request_time = worker->time;
+            read_mon->processed = -1;
 
             /* Create read job. mainly used for original implementation */
             read_msg = emalloc(sizeof(job));
@@ -120,6 +135,7 @@ int worker_listen(worker *worker) {
             write_mon = emalloc(sizeof(monitor)); 
             write_mon->buffer = out_buffer;
             write_mon->request_time = worker->time;
+            write_mon->processed = -1;
 
             /* Create write job. mainly used for original implementation */
             write_msg = emalloc(sizeof(job));
@@ -167,7 +183,9 @@ int worker_listen(worker *worker) {
                 pthread_mutex_unlock(&worker->all_discs[what_disc].read_lock);
             }
             check_reply(write_mon, worker);
+            free_messages(write_msg);
             check_reply(read_mon, worker);
+            free_messages(read_msg);
         }
 
         printf("Sent write requests for file: %d\n",out_file);
