@@ -42,6 +42,19 @@ void seed_rand(struct drand48_data *buffer)
     srand48_r(seed, buffer);
 }
 
+/* Will check the monitor and see if the 'done' flag has been set */
+/* This is not ideal and needs to be reimplemented */
+/* This now does not allow the worker to send multiple requests */
+/* Think this is wrong but cannot properly understand documentation */
+/* possible TODO */
+/* My preferred solution is to send all requests to all discs for that file */
+/* then have a queue of replies and process them */
+/* This is still not richards way? gah, I have no idea */
+/* TODO write this in the report and not in the comments */
+int check_reply(monitor *request) {
+
+}
+
 /* Threads will start here */
 int worker_listen(worker *worker) {
 
@@ -153,7 +166,8 @@ int worker_listen(worker *worker) {
 
                 pthread_mutex_unlock(&worker->all_discs[what_disc].read_lock);
             }
-
+            check_reply(write_mon, worker);
+            check_reply(read_mon, worker);
         }
 
         printf("Sent write requests for file: %d\n",out_file);

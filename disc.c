@@ -19,12 +19,10 @@ int
 disk_read(monitor *read_monitor, disc_container *this)
 {
     long block_number;
-    char *buffer_address;
 
     block_number = read_monitor->block_number;
 
-    buffer_address = read_monitor->buffer;
-    memset(buffer_address, 5, BLOCK_SIZE);
+    //memset(read_monitor->buffer, 5, BLOCK_SIZE);
 
     /* update disc thread's time */
     this->disc_time = max(this->disc_time, read_monitor->request_time);
@@ -38,6 +36,7 @@ disk_read(monitor *read_monitor, disc_container *this)
     /* store the completion time */
     read_monitor->completion_time = this->disc_time;
 
+//    fprintf(stderr,"reading\n");
 //    fprintf(stderr,"\nREAD\tdisc: %ld\tblock: %ld\tbuffer: %p\trequest time: %ld\tcompletion time: %ld\n\n", (unsigned long)pthread_self(), block_number, buffer_address, read_monitor->request_time, this->disc_time);
     return 0;
 }
@@ -47,11 +46,10 @@ int
 disk_write(monitor *write_monitor, disc_container *this)
 {
     long block_number;
-    char *buffer_address;
 
     block_number = write_monitor->block_number;
 
-    buffer_address = write_monitor->buffer;
+   // memset(write_monitor->buffer, 5, BLOCK_SIZE);
 
     /* update disc thread's time */
     this->disc_time = max(this->disc_time, write_monitor->request_time);
@@ -65,6 +63,7 @@ disk_write(monitor *write_monitor, disc_container *this)
     /* store the completion time */
     write_monitor->completion_time = this->disc_time;
 
+  //  fprintf(stderr,"writing\n");
   //  fprintf(stderr,"\nWRITE\tdisc: %ld\tblock: %ld\tbuffer: %p\trequest time: %ld\tcompletion time: %ld\n\n", (unsigned long)pthread_self(),block_number, buffer_address, write_monitor->request_time, this->disc_time);
 
     return 0;

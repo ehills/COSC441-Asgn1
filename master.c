@@ -43,7 +43,7 @@ int cbuffer_add(job *entry, circular_buffer *cbuf) {
     //int end;
 
     if (is_cb_full(cbuf)) {
-        return -1;
+//        return -1;
     }
     
     //end = (disc->cbuf.start + disc->cbuf.count) % CBUF_SIZE;
@@ -126,8 +126,9 @@ int create_worker_threads(int num_threads, int num_disks, int num_iterations) {
 
     workers = emalloc(sizeof(worker) * num_threads);
     for(j=0; j < num_threads; j++) {
-        workers[j].time = j;
+        workers[j].time = 0;
         workers[j].number_of_discs = num_disks;
+        // TODO don't need to pass these every time ovbiously..
         workers[j].repetition = num_iterations;
         workers[j].all_discs = discs;
         if (pthread_create(&(workers[j].thread_id), NULL, worker_listen, &workers[j]) != 0) {
@@ -152,6 +153,7 @@ main(int argc, char **argv)
     pthread_mutexattr_settype(&attribute, PTHREAD_MUTEX_ERRORCHECK);
     job quit_job;
     quit_job.message = QUIT;
+    quit_job.communication_monitor = NULL; // for completeness
     int j;
 
     // make disc threads
