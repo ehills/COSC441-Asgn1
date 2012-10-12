@@ -20,7 +20,7 @@ disk_read(monitor *read_monitor, disc_container *this)
 {
     long block_number;
 
-   // fprintf(stderr,"TRYING TO READ");
+    fprintf(stderr,"TRYING TO READ");
     block_number = read_monitor->block_number;
 
     memset(read_monitor->buffer, block_number, BLOCK_SIZE);
@@ -38,7 +38,6 @@ disk_read(monitor *read_monitor, disc_container *this)
     read_monitor->completion_time = this->disc_time;
 
     /* set completed flag */
-    read_monitor->processed = 0;
 //    pthread_mutex_lock(&read_monitor->processed_lock);
 //    pthread_cond_signal(&read_monitor->processed_cond);
 //    pthread_mutex_unlock(&read_monitor->processed_lock);
@@ -72,8 +71,8 @@ disk_write(monitor *write_monitor, disc_container *this)
     write_monitor->completion_time = this->disc_time;
 
     /* set completed flag */
-    write_monitor->processed = 0;
  //   pthread_mutex_lock(&write_monitor->processed_lock);
+ //   write_monitor->processed = 0;
  //   pthread_cond_signal(&write_monitor->processed_cond);
 //    pthread_mutex_unlock(&write_monitor->processed_lock);
 

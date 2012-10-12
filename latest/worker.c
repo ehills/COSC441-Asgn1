@@ -54,21 +54,12 @@ void seed_rand(struct drand48_data *buffer)
 
 int check_reply(monitor *request, worker *this) {
 
-    while (request->processed == 0) {
-        this->time = max(this->time, request->completion_time);
-        break;
-    }
-    //printf("segs here\n");
-    
  //   pthread_mutex_lock(&request->processed_lock);
 
 //    fprintf(stderr,"Check reply\t");
 //    pthread_cond_wait(&request->processed_cond, &request->processed_lock);
 //    fprintf(stderr,"Can check reply\n");
-      //while (request->processed == 0) {
-//          fprintf(stderr,"hasnt been seen yet\n");
-        //  this->time = max(this->time, request->completion_time);      
-      //}
+    this->time = max(this->time, request->completion_time);      
 //    fprintf(stderr, "Time is: %ld\n", this->time);
 
     //  sched_yield();
@@ -88,7 +79,7 @@ int free_messages(job *jobby, monitor *mon) {
 /* Threads will start here */
 int worker_listen(worker *worker) {
 
-    int i, b, j;
+    int i, b;
     int total_messages = 0;
     monitor *read_mon;              /* temp monitor storage */
     monitor *write_mon;
@@ -144,8 +135,8 @@ int worker_listen(worker *worker) {
             read_mon->buffer = in_buffer;
             read_mon->request_time = worker->time;
             read_mon->processed = -1;
-          //  pthread_mutex_init(&(read_mon->processed_lock), &attribute);
-          //  pthread_cond_init(&read_mon->processed_cond, NULL);
+            pthread_mutex_init(&(read_mon->processed_lock), &attribute);
+            pthread_cond_init(&read_mon->processed_cond, NULL);
 
             /* Create read job. mainly used for original implementation */
             read_msg = emalloc(sizeof(job));
@@ -157,8 +148,8 @@ int worker_listen(worker *worker) {
             write_mon->buffer = out_buffer;
             write_mon->request_time = worker->time;
             write_mon->processed = -1;
-          //  pthread_mutex_init(&(write_mon->processed_lock), &attribute);
-          //  pthread_cond_init(&write_mon->processed_cond, NULL);
+            pthread_mutex_init(&(write_mon->processed_lock), &attribute);
+            pthread_cond_init(&write_mon->processed_cond, NULL);
 
             /* Create write job. mainly used for original implementation */
             write_msg = emalloc(sizeof(job));
@@ -178,7 +169,7 @@ int worker_listen(worker *worker) {
             if (in_file < out_file) {
                 // read
                 pthread_mutex_lock(&worker->all_discs[what_disc].read_lock);
-                
+
                 while (cbuffer_add(read_msg,&worker->all_discs[what_disc].read_cbuf) == -1) {
                     pthread_mutex_unlock(&worker->all_discs[what_disc].read_lock);
                     sched_yield();
@@ -232,7 +223,7 @@ int worker_listen(worker *worker) {
 
                 check_reply(write_mon, worker);
             }
-           // fprintf(stderr,"Sent message\n");
+            fprintf(stderr,"Sent message\n");
             // deal with one file at a time
             total_messages++;
             free_messages(write_msg, write_mon);
