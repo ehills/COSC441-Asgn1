@@ -76,8 +76,4 @@ typedef struct worker_t {
     disc_container *all_discs;
 } worker;
 
-extern int   is_cb_full(circular_buffer *);
-extern int   is_cb_empty(circular_buffer *);
-extern int   cbuffer_add(job *, circular_buffer *);
-extern job * cbuffer_get_job(circular_buffer *);
 #endif

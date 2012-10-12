@@ -14,6 +14,7 @@
 #include <string.h>
 #include <pthread.h>
 #include "mylib.h"
+#include "cbuf.h"
 #include "disc.h"
 #include "worker.h"
 
@@ -142,7 +143,7 @@ int create_worker_threads(int num_threads, int num_disks, int num_iterations) {
  * Executes main thread. 
  * Currently performs no sanity checks on inputs
  */
-    int 
+int 
 main(int argc, char **argv) 
 {
     int num_disks = atoi(argv[1]);

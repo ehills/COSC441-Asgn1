@@ -11,6 +11,7 @@
 #include <stdlib.h>
 #include <pthread.h>
 #include "mylib.h"
+#include "cbuf.h"
 #include "master.h"
 #include "string.h"
 

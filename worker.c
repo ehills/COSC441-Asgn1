@@ -12,27 +12,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <pthread.h>
-#include "string.h"
 #include "mylib.h"
+#include "cbuf.h"
+#include "string.h"
 #include "master.h"
 #include "disc.h"
 
-void compute_physical_address(
-    int file_number,        // f
-    int block_number,       // b
-    int *which_disc,        // r
-    int *which_block,        // q
-    int const number_of_discs
-) {
-    long x;
-    if ((file_number >= 0) && (file_number < NUMBER_OF_FILES)) {
-        if (0 <= block_number && block_number < BLOCKS_PER_FILE) {
-            x = (long)(file_number * BLOCKS_PER_FILE + block_number);
-            *which_disc  = x % number_of_discs;
-            *which_block = x / number_of_discs;
-        }
-    } 
-}
 
 /* Different Seed for each thread */
 void seed_rand(struct drand48_data *buffer)
@@ -52,27 +37,17 @@ void seed_rand(struct drand48_data *buffer)
 /* This is still not richards way? gah, I have no idea */
 /* TODO write this in the report and not in the comments */
 
+/* Attempted to use yield but did not improve situation */
+/* Will attempt to use signalling with conditions */
+
 int check_reply(monitor *request, worker *this) {
 
     while (request->processed == 0) {
         this->time = max(this->time, request->completion_time);
         break;
     }
-    //printf("segs here\n");
-    
- //   pthread_mutex_lock(&request->processed_lock);
-
-//    fprintf(stderr,"Check reply\t");
-//    pthread_cond_wait(&request->processed_cond, &request->processed_lock);
-//    fprintf(stderr,"Can check reply\n");
-      //while (request->processed == 0) {
-//          fprintf(stderr,"hasnt been seen yet\n");
-        //  this->time = max(this->time, request->completion_time);      
-      //}
-//    fprintf(stderr, "Time is: %ld\n", this->time);
 
     //  sched_yield();
-  //  pthread_mutex_unlock(&request->processed_lock);
     return 0;
 }
 
@@ -85,17 +60,31 @@ int free_messages(job *jobby, monitor *mon) {
     return 0;
 }
 
+/* send request to disc */
+int send_request(pthread_mutex_t *lock, job *job, circular_buffer *cbuf) {
+    pthread_mutex_lock(lock);
+
+    while (cbuffer_add(job,cbuf) == -1) {
+        pthread_mutex_unlock(lock);
+        sched_yield();
+        pthread_mutex_lock(lock);
+    }
+
+    pthread_mutex_unlock(lock);
+    return 0;
+}
+
 /* Threads will start here */
 int worker_listen(worker *worker) {
 
-    int i, b, j;
+    int i, b;
     int total_messages = 0;
     monitor *read_mon;              /* temp monitor storage */
     monitor *write_mon;
     int in_file = -1;
-    int out_file = -1;     /* the files */
+    int out_file = -1;              /* the files */
     char *in_buffer, *out_buffer;   /* i/o buffers */
-    job *read_msg, *write_msg;       /* temp job storage */
+    job *read_msg, *write_msg;      /* temp job storage */
 
     int what_disc = 0;
     int what_block = 0;
@@ -103,8 +92,6 @@ int worker_listen(worker *worker) {
     double rand_result;
     struct drand48_data work_space;
 
-    pthread_mutexattr_t attribute; 
-    pthread_mutexattr_settype(&attribute, PTHREAD_MUTEX_ERRORCHECK);
 #if 0
     /* TODO: have this in an array ovbiously */
     char in_buff1[BLOCK_SIZE];  /* read-ahead buffers */
@@ -144,8 +131,6 @@ int worker_listen(worker *worker) {
             read_mon->buffer = in_buffer;
             read_mon->request_time = worker->time;
             read_mon->processed = -1;
-          //  pthread_mutex_init(&(read_mon->processed_lock), &attribute);
-          //  pthread_cond_init(&read_mon->processed_cond, NULL);
 
             /* Create read job. mainly used for original implementation */
             read_msg = emalloc(sizeof(job));
@@ -157,8 +142,6 @@ int worker_listen(worker *worker) {
             write_mon->buffer = out_buffer;
             write_mon->request_time = worker->time;
             write_mon->processed = -1;
-          //  pthread_mutex_init(&(write_mon->processed_lock), &attribute);
-          //  pthread_cond_init(&write_mon->processed_cond, NULL);
 
             /* Create write job. mainly used for original implementation */
             write_msg = emalloc(sizeof(job));
@@ -177,60 +160,26 @@ int worker_listen(worker *worker) {
              * add message and check reply */
             if (in_file < out_file) {
                 // read
-                pthread_mutex_lock(&worker->all_discs[what_disc].read_lock);
-                
-                while (cbuffer_add(read_msg,&worker->all_discs[what_disc].read_cbuf) == -1) {
-                    pthread_mutex_unlock(&worker->all_discs[what_disc].read_lock);
-                    sched_yield();
-                    pthread_mutex_lock(&worker->all_discs[what_disc].read_lock);
-                }
-
-                pthread_mutex_unlock(&worker->all_discs[what_disc].read_lock);
-
+                send_request(&worker->all_discs[what_disc].read_lock, 
+                            read_msg, &worker->all_discs[what_disc].read_cbuf);
                 check_reply(read_mon, worker);
 
                 // write
-                pthread_mutex_lock(&worker->all_discs[what_disc].write_lock);
-
-                while (cbuffer_add(write_msg,&worker->all_discs[what_disc].write_cbuf) == -1) {
-                    pthread_mutex_unlock(&worker->all_discs[what_disc].write_lock);
-                    sched_yield();
-                    pthread_mutex_lock(&worker->all_discs[what_disc].write_lock);
-
-                }
-
-                pthread_mutex_unlock(&worker->all_discs[what_disc].write_lock);
-
+                send_request(&worker->all_discs[what_disc].write_lock,
+                        write_msg, &worker->all_discs[what_disc].write_cbuf);
                 check_reply(write_mon, worker);
 
             } else {
 
                 // write
-                pthread_mutex_lock(&worker->all_discs[what_disc].write_lock);
-
-                while (cbuffer_add(write_msg,&worker->all_discs[what_disc].write_cbuf) == -1) {
-                    pthread_mutex_unlock(&worker->all_discs[what_disc].write_lock);
-                    sched_yield();
-                    pthread_mutex_lock(&worker->all_discs[what_disc].write_lock);
-
-                }
-
-                pthread_mutex_unlock(&worker->all_discs[what_disc].write_lock);
-
-                check_reply(read_mon, worker);
+                send_request(&worker->all_discs[what_disc].write_lock,
+                        write_msg, &worker->all_discs[what_disc].write_cbuf);
+                check_reply(write_mon, worker);
 
                 // read 
-                pthread_mutex_lock(&worker->all_discs[what_disc].read_lock);
-
-                while (cbuffer_add(read_msg,&worker->all_discs[what_disc].read_cbuf) == -1) {
-                    pthread_mutex_unlock(&worker->all_discs[what_disc].read_lock);
-                    sched_yield();
-                    pthread_mutex_lock(&worker->all_discs[what_disc].read_lock);
-                }
-
-                pthread_mutex_unlock(&worker->all_discs[what_disc].read_lock);
-
-                check_reply(write_mon, worker);
+                send_request(&worker->all_discs[what_disc].read_lock, 
+                            read_msg, &worker->all_discs[what_disc].read_cbuf);
+                check_reply(read_mon, worker);
             }
            // fprintf(stderr,"Sent message\n");
             // deal with one file at a time
