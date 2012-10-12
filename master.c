@@ -40,14 +40,13 @@ int is_cb_empty(circular_buffer *cbuf) {
  *  Add job into circular buffer.
  */
 int cbuffer_add(job *entry, circular_buffer *cbuf) {
-    //int end;
+    int res;
 
-    //if (is_cb_full(cbuf)) {
-    //    return -1;
-    //}
+    /* Does check in here rather than from the caller, so less chance of race-condition */
+    if (is_cb_full(cbuf)) {
+        return -1;
+    }
     
-    //end = (disc->cbuf.start + disc->cbuf.count) % CBUF_SIZE;
-
     cbuf->jobs[cbuf->end] = entry;
     cbuf->end = (cbuf->end +1) % CBUF_SIZE;
 

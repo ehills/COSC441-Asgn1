@@ -22,7 +22,7 @@ disk_read(monitor *read_monitor, disc_container *this)
 
     block_number = read_monitor->block_number;
 
-    memset(read_monitor->buffer, 5, BLOCK_SIZE);
+    memset(read_monitor->buffer, block_number, BLOCK_SIZE);
 
     /* update disc thread's time */
     this->disc_time = max(this->disc_time, read_monitor->request_time);
@@ -39,7 +39,6 @@ disk_read(monitor *read_monitor, disc_container *this)
     /* set completed flag */
     read_monitor->processed = 0;
 
-//    fprintf(stderr,"reading\n");
 //    fprintf(stderr,"\nREAD\tdisc: %ld\tblock: %ld\tbuffer: %p\trequest time: %ld\tcompletion time: %ld\n\n", (unsigned long)pthread_self(), block_number, buffer_address, read_monitor->request_time, this->disc_time);
     return 0;
 }
@@ -52,7 +51,7 @@ disk_write(monitor *write_monitor, disc_container *this)
 
     block_number = write_monitor->block_number;
 
-    memset(write_monitor->buffer, 5, BLOCK_SIZE);
+    memset(write_monitor->buffer, block_number, BLOCK_SIZE);
 
     /* update disc thread's time */
     this->disc_time = max(this->disc_time, write_monitor->request_time);
@@ -69,7 +68,6 @@ disk_write(monitor *write_monitor, disc_container *this)
     /* set completed flag */
     write_monitor->processed = 0;
 
-  //  fprintf(stderr,"writing\n");
   //  fprintf(stderr,"\nWRITE\tdisc: %ld\tblock: %ld\tbuffer: %p\trequest time: %ld\tcompletion time: %ld\n\n", (unsigned long)pthread_self(),block_number, buffer_address, write_monitor->request_time, this->disc_time);
 
     return 0;
@@ -99,6 +97,8 @@ disk_listen(disc_container *disc)
             disc_job = cbuffer_get_job(&disc->write_cbuf);
             if (disc_job->message == WRITE) {
                 disk_write(disc_job->communication_monitor, disc);
+                /* Quit message is stored here so should only be read once all other write messages have been dealt with */
+                /* In saying that, current implementation only sends quit once all workers have sent their requests anyway. */
             } else if (disc_job->message == QUIT) {
                 pthread_mutex_unlock(&(disc->write_lock)); 
                 return 0;

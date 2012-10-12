@@ -80,7 +80,6 @@ int worker_listen(worker *worker) {
     char *in_buffer, *out_buffer;   /* i/o buffers */
     job *read_msg, *write_msg;       /* temp job storage */
 
-    int res = -1;
     int what_disc = 0;
     int what_block = 0;
 
@@ -143,12 +142,16 @@ int worker_listen(worker *worker) {
             write_msg->message = WRITE;
             write_msg->communication_monitor = write_mon;
 
+            /* Find what disc and block to read from */
             compute_physical_address(in_file, b, &what_disc, &what_block, worker->number_of_discs);
             read_mon->block_number = what_block;
 
             compute_physical_address(out_file, b, &what_disc, &what_block, worker->number_of_discs);
             write_mon->block_number = what_block;
 
+            /* will check the 'fd' of the in and out files then grab the read/write lock 
+             * check if the disc is full, if it is, unlock and schedule out. otherwise 
+             * add message and then busy wait to check the reply */
             if (in_file < out_file) {
                 // read
                 pthread_mutex_lock(&worker->all_discs[what_disc].read_lock);
@@ -171,7 +174,6 @@ int worker_listen(worker *worker) {
                     sched_yield();
                     pthread_mutex_lock(&worker->all_discs[what_disc].write_lock);
 
-                    fprintf(stderr,"NEG 1\n");
                 }
 
                 pthread_mutex_unlock(&worker->all_discs[what_disc].write_lock);
@@ -188,7 +190,6 @@ int worker_listen(worker *worker) {
                     sched_yield();
                     pthread_mutex_lock(&worker->all_discs[what_disc].write_lock);
 
-                    fprintf(stderr,"NEG 1\n");
                 }
 
                 pthread_mutex_unlock(&worker->all_discs[what_disc].write_lock);
