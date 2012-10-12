@@ -18,9 +18,10 @@
 #define BLOCK_SIZE (BLOCK_SIZE_IN_KIB * 1024)
 #define BLOCKS_PER_FILE (1000 * 1000 / BLOCK_SIZE_IN_KIB)
 
-extern  void compute_physical_address(int, int, int *, int *, int const);
-extern  void *emalloc(size_t);
-extern  void *erealloc(void *, size_t);
+extern  void    compute_physical_address(int, int, int *, int *, int);
+extern  void    *emalloc(size_t);
+extern  void    *erealloc(void *, size_t);
+
 
 /**
  *  Monitor storing information for disc.

@@ -2,6 +2,7 @@
 #define DISK_H_
 
 extern void *disk_listen(void *);
-extern int disk_process(monitor *, disc_container *);
+extern int write_monitor(int);
+extern int read_monitor(int);
 
 #endif
