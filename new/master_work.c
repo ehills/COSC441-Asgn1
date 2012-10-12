@@ -18,19 +18,18 @@
 #include "worker.h"
 
 disc_container *discs;
-worker *workers;
 pthread_mutexattr_t attribute;
 
 /**
- * Check circular buffer is full
- */  
+ *  * Check circular buffer is full
+ *   */
 int is_cb_full(circular_buffer *cbuf) {
     return (cbuf->end + 1) % CBUF_SIZE == cbuf->start;
 }
 
 /*
  * Check whether circular buffer is empty.
- * Doesn't maintain a lock, is not crucial to have accurate reading as will be re-checked at some point.
+ * Doesn't maintain a lock, is not crucial to have accurate reading.
  */
 int is_cb_empty(circular_buffer *cbuf) {
     return cbuf->start == cbuf->end;
@@ -42,9 +41,9 @@ int is_cb_empty(circular_buffer *cbuf) {
 int cbuffer_add(job *entry, circular_buffer *cbuf) {
     //int end;
 
-    //if (is_cb_full(cbuf)) {
-    //    return -1;
-    //}
+//    if (is_cb_full(cbuf)) {
+ //       return -1;
+  //  }
     
     //end = (disc->cbuf.start + disc->cbuf.count) % CBUF_SIZE;
 
@@ -59,6 +58,7 @@ int cbuffer_add(job *entry, circular_buffer *cbuf) {
  */
 job *cbuffer_get_job(circular_buffer *cbuf) {
     job *entry;
+
 
     entry = cbuf->jobs[cbuf->start];
     cbuf->start = (cbuf->start + 1) % CBUF_SIZE;
@@ -92,13 +92,16 @@ create_disk_threads(int num_threads)
     discs = emalloc(sizeof(disc_container) * num_threads);
     for (i=0; i < num_threads; i++) {
 
+
         /* Initialise cbuf */
         discs[i].read_cbuf.start = 0;
         discs[i].read_cbuf.end = 0;
+        discs[i].read_cbuf.count = 0;
 
         /* Initialise cbuf */
         discs[i].write_cbuf.start = 0;
         discs[i].write_cbuf.end = 0;
+        discs[i].write_cbuf.count = 0;
 
         /* Initilaise read/write locks */
         if (pthread_mutex_init(&(discs[i].read_lock), &attribute) != 0) {
@@ -116,29 +119,11 @@ create_disk_threads(int num_threads)
             return -1; 
         }   
     }
-    fprintf(stdout,"\nDisc Threads Created: %d\n",i);
+    fprintf(stdout,"\nDisc Threads Created: %d\n\n",i);
 
     return 0;
 }
 
-int create_worker_threads(int num_threads, int num_disks, int num_iterations) {
-    int j;
-
-    workers = emalloc(sizeof(worker) * num_threads);
-    for(j=0; j < num_threads; j++) {
-        workers[j].time = 0;
-        workers[j].number_of_discs = num_disks;
-        // TODO don't need to pass these every time ovbiously..
-        workers[j].repetition = num_iterations;
-        workers[j].all_discs = discs;
-        if (pthread_create(&(workers[j].thread_id), NULL, worker_listen, &workers[j]) != 0) {
-            perror("Cannot create thread.");
-            return -1; 
-        }   
-    }   
-    fprintf(stdout,"\nWorkers Created: %d\n", j);
-    return 0;
-}
 
 /* 
  * Executes main thread. 
@@ -149,35 +134,43 @@ main(int argc, char **argv)
 {
     int num_disks = atoi(argv[1]);
     int num_worker_threads = atoi(argv[2]);
+    pthread_t worker_thread_id[num_worker_threads]; 
     int num_iterations = atoi(argv[3]);
     pthread_mutexattr_settype(&attribute, PTHREAD_MUTEX_ERRORCHECK);
     job quit_job;
     quit_job.message = QUIT;
-    quit_job.communication_monitor = NULL; // for completeness
     int j;
+
 
     // make disc threads
     create_disk_threads(num_disks);
 
     // create worker threads
-    create_worker_threads(num_worker_threads,num_disks, num_iterations);
+    for(j=0; j < num_worker_threads; j++) {
+        if (pthread_create(&worker_thread_id[j], NULL, worker_listen, discs) != 0) {
+            perror("Cannot create thread.");
+            return -1; 
+        }   
+    }   
+    fprintf(stdout,"\nWorkers Created: %d\n\n", j);
 
     // catch all worker threads
     for(j=0; j < num_worker_threads; j++) {
-        pthread_join(workers[j].thread_id, NULL); 
+        pthread_join(worker_thread_id[j], NULL); 
     }
-    fprintf(stdout,"\nWorker Threads Finished: %d\n",j);
+    fprintf(stdout,"\nWorker threads finished: %d\n",j);
 
     // send quit message
     for(j=0; j < num_disks; j++) {
-        cbuffer_add(&quit_job,&discs[j].write_cbuf); 
+        printf("deja\n");
+        cbuffer_add(&quit_job,&discs[j].read_cbuf); 
+        printf("vu\n");
     }
 
     // catch disc threads
     for(j=0; j < num_disks; j++) {
         pthread_join(discs[j].thread_id, NULL); 
     }
-    printf("Disc Threads Finished: %d\n",j);
 
     printf("Num disks: %d\nNum worker threads: %d\nNum iterations: %d\n"
             , num_disks, num_worker_threads, num_iterations);

@@ -88,7 +88,6 @@ int worker_listen(worker *worker) {
     struct drand48_data work_space;
 
 #if 0
-    /* TODO: have this in an array ovbiously */
     char in_buff1[BLOCK_SIZE];  /* read-ahead buffers */
     char in_buff2[BLOCK_SIZE];
     char in_buff3[BLOCK_SIZE];
@@ -153,11 +152,7 @@ int worker_listen(worker *worker) {
                 // read
                 pthread_mutex_lock(&worker->all_discs[what_disc].read_lock);
 
-                while (cbuffer_add(read_msg,&worker->all_discs[what_disc].read_cbuf) == -1) {
-                    pthread_mutex_unlock(&worker->all_discs[what_disc].read_lock);
-                    sched_yield();
-                    pthread_mutex_lock(&worker->all_discs[what_disc].read_lock);
-                }
+                cbuffer_add(read_msg,&worker->all_discs[what_disc].read_cbuf);
 
                 pthread_mutex_unlock(&worker->all_discs[what_disc].read_lock);
 
@@ -166,13 +161,7 @@ int worker_listen(worker *worker) {
                 // write
                 pthread_mutex_lock(&worker->all_discs[what_disc].write_lock);
 
-                while (cbuffer_add(write_msg,&worker->all_discs[what_disc].write_cbuf) == -1) {
-                    pthread_mutex_unlock(&worker->all_discs[what_disc].write_lock);
-                    sched_yield();
-                    pthread_mutex_lock(&worker->all_discs[what_disc].write_lock);
-
-                    fprintf(stderr,"NEG 1\n");
-                }
+                cbuffer_add(write_msg,&worker->all_discs[what_disc].write_cbuf);
 
                 pthread_mutex_unlock(&worker->all_discs[what_disc].write_lock);
 
@@ -183,26 +172,18 @@ int worker_listen(worker *worker) {
                 // write
                 pthread_mutex_lock(&worker->all_discs[what_disc].write_lock);
 
-                while (cbuffer_add(write_msg,&worker->all_discs[what_disc].write_cbuf) == -1) {
-                    pthread_mutex_unlock(&worker->all_discs[what_disc].write_lock);
-                    sched_yield();
-                    pthread_mutex_lock(&worker->all_discs[what_disc].write_lock);
-
-                    fprintf(stderr,"NEG 1\n");
-                }
+    //            while (is_cb_full(&worker->all_discs[what_disc].write_cbuf) == 0) {
+  //                  sched_yield();
+//                }
+                cbuffer_add(write_msg,&worker->all_discs[what_disc].write_cbuf);
 
                 pthread_mutex_unlock(&worker->all_discs[what_disc].write_lock);
 
                 check_reply(read_mon, worker);
-
                 // read 
                 pthread_mutex_lock(&worker->all_discs[what_disc].read_lock);
 
-                while (cbuffer_add(read_msg,&worker->all_discs[what_disc].read_cbuf) == -1) {
-                    pthread_mutex_unlock(&worker->all_discs[what_disc].read_lock);
-                    sched_yield();
-                    pthread_mutex_lock(&worker->all_discs[what_disc].read_lock);
-                }
+                cbuffer_add(read_msg,&worker->all_discs[what_disc].read_cbuf);
 
                 pthread_mutex_unlock(&worker->all_discs[what_disc].read_lock);
 

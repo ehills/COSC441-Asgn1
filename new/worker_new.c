@@ -42,33 +42,6 @@ void seed_rand(struct drand48_data *buffer)
     srand48_r(seed, buffer);
 }
 
-/* Will check the monitor and see if the 'done' flag has been set */
-/* This is not ideal and needs to be reimplemented */
-/* This now does not allow the worker to send multiple requests */
-/* Think this is wrong but cannot properly understand documentation */
-/* possible TODO */
-/* My preferred solution is to send all requests to all discs for that file */
-/* then have a queue of replies and process them */
-/* This is still not richards way? gah, I have no idea */
-/* TODO write this in the report and not in the comments */
-int check_reply(monitor *request, worker *this) {
-    while (request->processed == 0) {
-        this->time = max(this->time, request->completion_time);      
-//        printf("worker: %lu\ntime: %ld\n",(unsigned long)pthread_self(),this->time);
-        break;
-    }
-    return 0;
-}
-
-/* live free or die hard */
-int free_messages(job *jobby, monitor *mon) {
-
-    free(mon);
-    free(jobby);
-
-    return 0;
-}
-
 /* Threads will start here */
 int worker_listen(worker *worker) {
 
@@ -88,7 +61,6 @@ int worker_listen(worker *worker) {
     struct drand48_data work_space;
 
 #if 0
-    /* TODO: have this in an array ovbiously */
     char in_buff1[BLOCK_SIZE];  /* read-ahead buffers */
     char in_buff2[BLOCK_SIZE];
     char in_buff3[BLOCK_SIZE];
@@ -125,7 +97,6 @@ int worker_listen(worker *worker) {
             read_mon = emalloc(sizeof(monitor)); 
             read_mon->buffer = in_buffer;
             read_mon->request_time = worker->time;
-            read_mon->processed = -1;
 
             /* Create read job. mainly used for original implementation */
             read_msg = emalloc(sizeof(job));
@@ -136,7 +107,6 @@ int worker_listen(worker *worker) {
             write_mon = emalloc(sizeof(monitor)); 
             write_mon->buffer = out_buffer;
             write_mon->request_time = worker->time;
-            write_mon->processed = -1;
 
             /* Create write job. mainly used for original implementation */
             write_msg = emalloc(sizeof(job));
@@ -153,67 +123,41 @@ int worker_listen(worker *worker) {
                 // read
                 pthread_mutex_lock(&worker->all_discs[what_disc].read_lock);
 
-                while (cbuffer_add(read_msg,&worker->all_discs[what_disc].read_cbuf) == -1) {
-                    pthread_mutex_unlock(&worker->all_discs[what_disc].read_lock);
-                    sched_yield();
-                    pthread_mutex_lock(&worker->all_discs[what_disc].read_lock);
-                }
+                cbuffer_add(read_msg,&worker->all_discs[what_disc].read_cbuf);
 
                 pthread_mutex_unlock(&worker->all_discs[what_disc].read_lock);
-
-                check_reply(read_mon, worker);
 
                 // write
                 pthread_mutex_lock(&worker->all_discs[what_disc].write_lock);
 
-                while (cbuffer_add(write_msg,&worker->all_discs[what_disc].write_cbuf) == -1) {
-                    pthread_mutex_unlock(&worker->all_discs[what_disc].write_lock);
-                    sched_yield();
-                    pthread_mutex_lock(&worker->all_discs[what_disc].write_lock);
-
-                    fprintf(stderr,"NEG 1\n");
-                }
+                cbuffer_add(write_msg,&worker->all_discs[what_disc].write_cbuf);
 
                 pthread_mutex_unlock(&worker->all_discs[what_disc].write_lock);
-
-                check_reply(write_mon, worker);
 
             } else {
 
                 // write
                 pthread_mutex_lock(&worker->all_discs[what_disc].write_lock);
 
-                while (cbuffer_add(write_msg,&worker->all_discs[what_disc].write_cbuf) == -1) {
-                    pthread_mutex_unlock(&worker->all_discs[what_disc].write_lock);
+                while (is_cb_full(&worker->all_discs[what_disc].write_cbuf) == 0) {
                     sched_yield();
-                    pthread_mutex_lock(&worker->all_discs[what_disc].write_lock);
-
-                    fprintf(stderr,"NEG 1\n");
                 }
+                cbuffer_add(write_msg,&worker->all_discs[what_disc].write_cbuf);
 
                 pthread_mutex_unlock(&worker->all_discs[what_disc].write_lock);
-
-                check_reply(read_mon, worker);
 
                 // read 
                 pthread_mutex_lock(&worker->all_discs[what_disc].read_lock);
 
-                while (cbuffer_add(read_msg,&worker->all_discs[what_disc].read_cbuf) == -1) {
-                    pthread_mutex_unlock(&worker->all_discs[what_disc].read_lock);
-                    sched_yield();
-                    pthread_mutex_lock(&worker->all_discs[what_disc].read_lock);
-                }
+                cbuffer_add(read_msg,&worker->all_discs[what_disc].read_cbuf);
 
                 pthread_mutex_unlock(&worker->all_discs[what_disc].read_lock);
-
-                check_reply(write_mon, worker);
             }
-            // deal with one file at a time
-            free_messages(write_msg, write_mon);
-            free_messages(read_msg, read_mon);
+
         }
-        free(in_buffer);
-        free(out_buffer);
+
+        printf("Sent write requests for file: %d\n",out_file);
+        printf("Sent read requests for file: %d\n",in_file);
 
         // TODO TODO TODO - maybe not the below solution. may have to do it for each block 
         // checks replies after all blocks for the file have been queued
@@ -222,5 +166,6 @@ int worker_listen(worker *worker) {
 
     }
     printf("Worker took: %ld\n", worker->time);
+    //    printf("Worker took %ld\n", );
     return 0;
 }

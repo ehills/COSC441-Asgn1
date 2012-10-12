@@ -22,15 +22,15 @@ worker *workers;
 pthread_mutexattr_t attribute;
 
 /**
- * Check circular buffer is full
- */  
+ *  * Check circular buffer is full
+ *   */
 int is_cb_full(circular_buffer *cbuf) {
     return (cbuf->end + 1) % CBUF_SIZE == cbuf->start;
 }
 
 /*
  * Check whether circular buffer is empty.
- * Doesn't maintain a lock, is not crucial to have accurate reading as will be re-checked at some point.
+ * Doesn't maintain a lock, is not crucial to have accurate reading.
  */
 int is_cb_empty(circular_buffer *cbuf) {
     return cbuf->start == cbuf->end;
@@ -42,9 +42,9 @@ int is_cb_empty(circular_buffer *cbuf) {
 int cbuffer_add(job *entry, circular_buffer *cbuf) {
     //int end;
 
-    //if (is_cb_full(cbuf)) {
-    //    return -1;
-    //}
+    if (is_cb_full(cbuf)) {
+        return -1;
+    }
     
     //end = (disc->cbuf.start + disc->cbuf.count) % CBUF_SIZE;
 
@@ -116,7 +116,7 @@ create_disk_threads(int num_threads)
             return -1; 
         }   
     }
-    fprintf(stdout,"\nDisc Threads Created: %d\n",i);
+    fprintf(stdout,"\nDisc Threads Created: %d\n\n",i);
 
     return 0;
 }
@@ -126,9 +126,8 @@ int create_worker_threads(int num_threads, int num_disks, int num_iterations) {
 
     workers = emalloc(sizeof(worker) * num_threads);
     for(j=0; j < num_threads; j++) {
-        workers[j].time = 0;
+        workers[j].time = j;
         workers[j].number_of_discs = num_disks;
-        // TODO don't need to pass these every time ovbiously..
         workers[j].repetition = num_iterations;
         workers[j].all_discs = discs;
         if (pthread_create(&(workers[j].thread_id), NULL, worker_listen, &workers[j]) != 0) {
@@ -136,7 +135,7 @@ int create_worker_threads(int num_threads, int num_disks, int num_iterations) {
             return -1; 
         }   
     }   
-    fprintf(stdout,"\nWorkers Created: %d\n", j);
+    fprintf(stdout,"\nWorkers Created: %d\n\n", j);
     return 0;
 }
 
@@ -153,7 +152,6 @@ main(int argc, char **argv)
     pthread_mutexattr_settype(&attribute, PTHREAD_MUTEX_ERRORCHECK);
     job quit_job;
     quit_job.message = QUIT;
-    quit_job.communication_monitor = NULL; // for completeness
     int j;
 
     // make disc threads
@@ -166,18 +164,19 @@ main(int argc, char **argv)
     for(j=0; j < num_worker_threads; j++) {
         pthread_join(workers[j].thread_id, NULL); 
     }
-    fprintf(stdout,"\nWorker Threads Finished: %d\n",j);
+    fprintf(stdout,"\nWorker threads finished: %d\n",j);
 
     // send quit message
     for(j=0; j < num_disks; j++) {
         cbuffer_add(&quit_job,&discs[j].write_cbuf); 
+        fprintf(stdout,"\nsend quit to disc: %d\n",j);
     }
 
     // catch disc threads
     for(j=0; j < num_disks; j++) {
         pthread_join(discs[j].thread_id, NULL); 
+        printf("Actually quit\n");
     }
-    printf("Disc Threads Finished: %d\n",j);
 
     printf("Num disks: %d\nNum worker threads: %d\nNum iterations: %d\n"
             , num_disks, num_worker_threads, num_iterations);

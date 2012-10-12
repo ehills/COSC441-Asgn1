@@ -42,9 +42,9 @@ int is_cb_empty(circular_buffer *cbuf) {
 int cbuffer_add(job *entry, circular_buffer *cbuf) {
     //int end;
 
-    //if (is_cb_full(cbuf)) {
-    //    return -1;
-    //}
+    while (!is_cb_full(cbuf)) {
+        break;
+    }
     
     //end = (disc->cbuf.start + disc->cbuf.count) % CBUF_SIZE;
 
