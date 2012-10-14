@@ -32,6 +32,8 @@ typedef struct monitor_t {
     long receipt_time;
     long completion_time;
     short processed;
+    pthread_mutex_t processed_lock;
+    pthread_cond_t processed_cond;
     char *buffer;
 
 } monitor;

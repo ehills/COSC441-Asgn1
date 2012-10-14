@@ -38,12 +38,17 @@ void seed_rand(struct drand48_data *buffer)
 /* Attempted to use yield but did not improve situation */
 /* Will attempt to use signalling with conditions */
 int check_reply(monitor *request, worker *this) {
+    pthread_mutex_lock(&request->processed_lock);
 
-    while (request->processed != 0) {
+    pthread_cond_wait(&request->processed_cond, &request->processed_lock);
+    this->time = max(this->time, request->completion_time);      
+    pthread_mutex_unlock(&request->processed_lock);
+
+/*    while (request->processed != 0) {
       sched_yield();
     }
     this->time = max(this->time, request->completion_time);
-
+*/
     return 0;
 }
 
@@ -87,7 +92,8 @@ int worker_listen(worker *worker) {
 
     double rand_result;
     struct drand48_data work_space;
-
+    pthread_mutexattr_t attribute; 
+    pthread_mutexattr_settype(&attribute, PTHREAD_MUTEX_ERRORCHECK);
 #if 0
     /* TODO: have this in an array ovbiously */
     char in_buff1[BLOCK_SIZE];  /* read-ahead buffers */
@@ -129,6 +135,8 @@ int worker_listen(worker *worker) {
             read_mon->buffer = in_buffer;
             read_mon->request_time = worker->time;
             read_mon->processed = -1;
+            pthread_mutex_init(&(read_mon->processed_lock), &attribute);
+            pthread_cond_init(&read_mon->processed_cond, NULL);
 
             /* Create read job. mainly used for original implementation */
             read_msg = emalloc(sizeof(job));
@@ -140,6 +148,8 @@ int worker_listen(worker *worker) {
             write_mon->buffer = out_buffer;
             write_mon->request_time = worker->time;
             write_mon->processed = -1;
+            pthread_mutex_init(&(write_mon->processed_lock), &attribute);
+            pthread_cond_init(&write_mon->processed_cond, NULL);
 
             /* Create write job. mainly used for original implementation */
             write_msg = emalloc(sizeof(job));
