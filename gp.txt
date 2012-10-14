@@ -3,20 +3,22 @@ Flat profile:
 Each sample counts as 0.01 seconds.
   %   cumulative   self              self     total           
  time   seconds   seconds    calls  ns/call  ns/call  name    
- 58.75      0.44     0.44 24566547    17.94    17.94  is_cb_empty
-  9.35      0.51     0.07                             disk_listen
-  8.01      0.57     0.06   593011   101.33   101.33  is_cb_full
-  8.01      0.63     0.06   265330   226.47   226.47  disk_read
-  8.01      0.69     0.06                             worker_listen
-  5.34      0.73     0.04   235056   170.42   170.42  disk_write
-  1.34      0.74     0.01   594540    16.84    16.84  cbuffer_get_job
-  1.34      0.75     0.01   309212    32.39    32.39  emalloc
-  0.00      0.75     0.00   660884     0.00    90.92  cbuffer_add
-  0.00      0.75     0.00   163056     0.00     0.00  compute_physical_address
-  0.00      0.75     0.00   161264     0.00     0.00  free_messages
-  0.00      0.75     0.00   147381     0.00     0.00  check_reply
-  0.00      0.75     0.00        2     0.00     0.00  seed_rand
-  0.00      0.75     0.00        1     0.00    32.39  create_disk_threads
+ 68.13      1.85     1.85  4086953   453.45   453.45  disk_process
+  7.00      2.04     0.19  4490600    42.38    42.38  compute_physical_address
+  4.42      2.16     0.12                             disk_listen
+  4.42      2.28     0.12                             worker_listen
+  3.31      2.37     0.09  5017488    17.97    17.97  is_cb_empty
+  3.13      2.46     0.09  6504409    13.09    13.09  is_cb_full
+  3.13      2.54     0.09  4483662    18.99    53.62  send_request
+  2.58      2.61     0.07  6442079    10.89    24.10  cbuffer_add
+  1.84      2.66     0.05  4242520    11.81    11.81  cbuffer_get_job
+  0.92      2.69     0.03  4440305     5.64     5.64  free_messages
+  0.74      2.71     0.02  4432264     4.52     4.52  check_reply
+  0.37      2.72     0.01  8926322     1.12     1.12  emalloc
+  0.18      2.72     0.01                             frame_dummy
+  0.00      2.72     0.00        7     0.00     0.00  seed_rand
+  0.00      2.72     0.00        1     0.00     1.12  create_disk_threads
+  0.00      2.72     0.00        1     0.00     1.12  create_worker_threads
 
  %         the percentage of the total running time of the
 time       program used by this function.
@@ -48,67 +50,78 @@ name       the name of the function.  This is the minor sort
 		     Call graph (explanation follows)
 
 
-granularity: each sample hit covers 2 byte(s) for 1.33% of 0.75 seconds
+granularity: each sample hit covers 2 byte(s) for 0.37% of 2.72 seconds
 
 index % time    self  children    called     name
                                                  <spontaneous>
-[1]     82.7    0.07    0.55                 disk_listen [1]
-                0.44    0.00 24566547/24566547     is_cb_empty [2]
-                0.06    0.00  265330/265330      disk_read [6]
-                0.04    0.00  235056/235056      disk_write [7]
-                0.01    0.00  594540/594540      cbuffer_get_job [8]
+[1]     77.6    0.12    1.99                 disk_listen [1]
+                1.85    0.00 4086953/4086953     disk_process [2]
+                0.09    0.00 5017488/5017488     is_cb_empty [7]
+                0.05    0.00 4242520/4242520     cbuffer_get_job [9]
 -----------------------------------------------
-                0.44    0.00 24566547/24566547     disk_listen [1]
-[2]     58.7    0.44    0.00 24566547         is_cb_empty [2]
------------------------------------------------
-                                                 <spontaneous>
-[3]     17.3    0.06    0.07                 worker_listen [3]
-                0.00    0.06  660884/660884      cbuffer_add [4]
-                0.01    0.00  309211/309212      emalloc [9]
-                0.00    0.00  163056/163056      compute_physical_address [12]
-                0.00    0.00  161264/161264      free_messages [13]
-                0.00    0.00  147381/147381      check_reply [14]
-                0.00    0.00       2/2           seed_rand [15]
------------------------------------------------
-                0.00    0.06  660884/660884      worker_listen [3]
-[4]      8.0    0.00    0.06  660884         cbuffer_add [4]
-                0.06    0.00  593011/593011      is_cb_full [5]
------------------------------------------------
-                0.06    0.00  593011/593011      cbuffer_add [4]
-[5]      8.0    0.06    0.00  593011         is_cb_full [5]
------------------------------------------------
-                0.06    0.00  265330/265330      disk_listen [1]
-[6]      8.0    0.06    0.00  265330         disk_read [6]
------------------------------------------------
-                0.04    0.00  235056/235056      disk_listen [1]
-[7]      5.3    0.04    0.00  235056         disk_write [7]
------------------------------------------------
-                0.01    0.00  594540/594540      disk_listen [1]
-[8]      1.3    0.01    0.00  594540         cbuffer_get_job [8]
------------------------------------------------
-                0.00    0.00       1/309212      create_disk_threads [10]
-                0.01    0.00  309211/309212      worker_listen [3]
-[9]      1.3    0.01    0.00  309212         emalloc [9]
------------------------------------------------
-                0.00    0.00       1/1           main [11]
-[10]     0.0    0.00    0.00       1         create_disk_threads [10]
-                0.00    0.00       1/309212      emalloc [9]
+                1.85    0.00 4086953/4086953     disk_listen [1]
+[2]     68.0    1.85    0.00 4086953         disk_process [2]
 -----------------------------------------------
                                                  <spontaneous>
-[11]     0.0    0.00    0.00                 main [11]
-                0.00    0.00       1/1           create_disk_threads [10]
+[3]     22.2    0.12    0.49                 worker_listen [3]
+                0.09    0.16 4483662/4483662     send_request [4]
+                0.19    0.00 4490600/4490600     compute_physical_address [5]
+                0.03    0.00 4440305/4440305     free_messages [10]
+                0.02    0.00 4432264/4432264     check_reply [11]
+                0.01    0.00 8926320/8926322     emalloc [12]
+                0.00    0.00       7/7           seed_rand [17]
 -----------------------------------------------
-                0.00    0.00  163056/163056      worker_listen [3]
-[12]     0.0    0.00    0.00  163056         compute_physical_address [12]
+                0.09    0.16 4483662/4483662     worker_listen [3]
+[4]      8.8    0.09    0.16 4483662         send_request [4]
+                0.07    0.09 6442069/6442079     cbuffer_add [6]
 -----------------------------------------------
-                0.00    0.00  161264/161264      worker_listen [3]
-[13]     0.0    0.00    0.00  161264         free_messages [13]
+                0.19    0.00 4490600/4490600     worker_listen [3]
+[5]      7.0    0.19    0.00 4490600         compute_physical_address [5]
 -----------------------------------------------
-                0.00    0.00  147381/147381      worker_listen [3]
-[14]     0.0    0.00    0.00  147381         check_reply [14]
+                0.00    0.00      10/6442079     main [14]
+                0.07    0.09 6442069/6442079     send_request [4]
+[6]      5.7    0.07    0.09 6442079         cbuffer_add [6]
+                0.09    0.00 6504409/6504409     is_cb_full [8]
 -----------------------------------------------
-                0.00    0.00       2/2           worker_listen [3]
-[15]     0.0    0.00    0.00       2         seed_rand [15]
+                0.09    0.00 5017488/5017488     disk_listen [1]
+[7]      3.3    0.09    0.00 5017488         is_cb_empty [7]
+-----------------------------------------------
+                0.09    0.00 6504409/6504409     cbuffer_add [6]
+[8]      3.1    0.09    0.00 6504409         is_cb_full [8]
+-----------------------------------------------
+                0.05    0.00 4242520/4242520     disk_listen [1]
+[9]      1.8    0.05    0.00 4242520         cbuffer_get_job [9]
+-----------------------------------------------
+                0.03    0.00 4440305/4440305     worker_listen [3]
+[10]     0.9    0.03    0.00 4440305         free_messages [10]
+-----------------------------------------------
+                0.02    0.00 4432264/4432264     worker_listen [3]
+[11]     0.7    0.02    0.00 4432264         check_reply [11]
+-----------------------------------------------
+                0.00    0.00       1/8926322     create_disk_threads [15]
+                0.00    0.00       1/8926322     create_worker_threads [16]
+                0.01    0.00 8926320/8926322     worker_listen [3]
+[12]     0.4    0.01    0.00 8926322         emalloc [12]
+-----------------------------------------------
+                                                 <spontaneous>
+[13]     0.2    0.01    0.00                 frame_dummy [13]
+-----------------------------------------------
+                                                 <spontaneous>
+[14]     0.0    0.00    0.00                 main [14]
+                0.00    0.00      10/6442079     cbuffer_add [6]
+                0.00    0.00       1/1           create_disk_threads [15]
+                0.00    0.00       1/1           create_worker_threads [16]
+-----------------------------------------------
+                0.00    0.00       1/1           main [14]
+[15]     0.0    0.00    0.00       1         create_disk_threads [15]
+                0.00    0.00       1/8926322     emalloc [12]
+-----------------------------------------------
+                0.00    0.00       1/1           main [14]
+[16]     0.0    0.00    0.00       1         create_worker_threads [16]
+                0.00    0.00       1/8926322     emalloc [12]
+-----------------------------------------------
+                0.00    0.00       7/7           worker_listen [3]
+[17]     0.0    0.00    0.00       7         seed_rand [17]
 -----------------------------------------------
 
  This table describes the call tree of the program, and was sorted by
@@ -196,8 +209,9 @@ index % time    self  children    called     name
 
 Index by function name
 
-   [4] cbuffer_add             [1] disk_listen             [2] is_cb_empty
-   [8] cbuffer_get_job         [6] disk_read               [5] is_cb_full
-  [14] check_reply             [7] disk_write             [15] seed_rand
-  [12] compute_physical_address [9] emalloc                [3] worker_listen
-  [10] create_disk_threads    [13] free_messages
+   [6] cbuffer_add             [1] disk_listen             [8] is_cb_full
+   [9] cbuffer_get_job         [2] disk_process           [17] seed_rand
+  [11] check_reply            [12] emalloc                 [4] send_request
+   [5] compute_physical_address [13] frame_dummy           [3] worker_listen
+  [15] create_disk_threads    [10] free_messages
+  [16] create_worker_threads   [7] is_cb_empty

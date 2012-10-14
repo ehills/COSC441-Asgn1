@@ -33,7 +33,7 @@ disk_process(monitor *mon, disc_container *this)
     mon->receipt_time = this->disc_time;
 
     /* get the block and data, spin the head */
-    this->disc_time += 10 + (12*drand48());
+    this->disc_time += 10 + 12*drand48();
 
     /* store the completion time */
     mon->completion_time = this->disc_time;
@@ -75,5 +75,7 @@ disk_listen(disc_container *disc)
             }
             pthread_mutex_unlock(&(disc->write_lock)); 
         }
+        /* nothing to do, yield the cpu and come back */
+        sched_yield();
     }
 }
