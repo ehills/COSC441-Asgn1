@@ -34,12 +34,9 @@ void seed_rand(struct drand48_data *buffer)
 /* possible TODO */
 /* My preferred solution is to send all requests to all discs for that file */
 /* then have a queue of replies and process them */
-/* This is still not richards way? gah, I have no idea */
-/* TODO write this in the report and not in the comments */
 
 /* Attempted to use yield but did not improve situation */
 /* Will attempt to use signalling with conditions */
-
 int check_reply(monitor *request, worker *this) {
 
     while (request->processed != 0) {
@@ -123,6 +120,8 @@ int worker_listen(worker *worker) {
         out_buffer = emalloc(BLOCK_SIZE * sizeof (char));
         memset(out_buffer, 0, BLOCK_SIZE);
 
+        // lock infile
+        // lock outfile
         for (b=0; b < BLOCKS_PER_FILE; b++) {
 
             /* Create read monitor */
@@ -159,26 +158,38 @@ int worker_listen(worker *worker) {
              * add message and check reply */
             if (in_file < out_file) {
                 // read
+                pthread_mutex_lock(&(worker->file_locks[in_file])); 
                 send_request(&worker->all_discs[what_disc].read_lock, 
                             read_msg, &worker->all_discs[what_disc].read_cbuf);
                 check_reply(read_mon, worker);
+                pthread_mutex_unlock(&(worker->file_locks[in_file])); 
+
+                worker->time++;
 
                 // write
+                pthread_mutex_lock(&(worker->file_locks[out_file])); 
                 send_request(&worker->all_discs[what_disc].write_lock,
                         write_msg, &worker->all_discs[what_disc].write_cbuf);
                 check_reply(write_mon, worker);
+                pthread_mutex_unlock(&(worker->file_locks[out_file])); 
 
             } else {
 
                 // write
+                pthread_mutex_lock(&(worker->file_locks[out_file])); 
                 send_request(&worker->all_discs[what_disc].write_lock,
                         write_msg, &worker->all_discs[what_disc].write_cbuf);
                 check_reply(write_mon, worker);
+                pthread_mutex_unlock(&(worker->file_locks[out_file])); 
+
+                worker->time++;
 
                 // read 
+                pthread_mutex_lock(&(worker->file_locks[in_file])); 
                 send_request(&worker->all_discs[what_disc].read_lock, 
                             read_msg, &worker->all_discs[what_disc].read_cbuf);
                 check_reply(read_mon, worker);
+                pthread_mutex_unlock(&(worker->file_locks[in_file])); 
             }
            // fprintf(stderr,"Sent message\n");
             // deal with one file at a time

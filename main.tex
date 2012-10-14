@@ -31,7 +31,9 @@ After using \texttt{gprof} I found that the loop that checks for new requests is
 
 Seeing as I use a very simple circular buffer to store my messages, one for WRITE messages and one for READ messages, I could have had the disc access the queues without needing a lock. The reason a lock would not be needed is that the only race-condition that could occur is when a worker thread wanting to write the message finds that the queue is full (when it actually is not), in this case it is not important as it will check again when it is scheduled back into the CPU. The disc is the able to read the queue without causing interference of the worker thread writing to the queue. The difference in execution-time between the disc locking the queue and not locking the queue turns out to be negligible.
 
-To be perfectly honest, I still never fully understood how the buffer rings was suppose to work. I realised that we should not write actual bytes (although I do memset a couple of buffers, just for fun), but I am not sure on how we were suppose to implement the read-ahead, write-behind buffers. Also an area of confusion I had, was the read when its full, write when its empty business.
+To be perfectly honest, I still never fully understood how the buffer rings was suppose to work. I realised that we should not write actual bytes (although I do \texttt{memset(3)} a couple of buffers, just for fun), but I am not sure on how we were suppose to implement the read-ahead, write-behind buffers. Also an area of confusion I had, was the read when its full, write when its empty business.
+
+The system used to keep track of the time for each worker is extremely similar to \emph{Lamport Clocks}. The idea is that each process sends a request to the disc with its current version of time, the discs will then process their request and send a reply with the discs new version of time. The worker will then take the maximum of its own current time and the time sent with the disc reply. This is effectively the same as Lamport Clocks. Controlling time like this allows a partial causal ordering of events between threads. It may not be perfectly accurate but time-synchronisation is not always practical.
 
 To me a message passing system would have been far more elegant.
 
@@ -53,11 +55,13 @@ An important difference to be noted with a message-passing implementation is tha
 
 In real systems, mapping files to memory is common. However, in a message-passing system, it is not possible map files as this is still a form of shared-memory.
 
+Locks for the files in a message-passing system would need to be implemented with care. The worker component would need to send a message to the respective disc and request that it processes that file. The disc would then need to keep track of all files that are currently being needed. If there is contention it will need to be dealt with. 
+
 A possible draw-back of message-passing is synchronisation that may be needed. In this assignment this is not an issue, however in a real system, where perhaps files were being moved around on disc (and therefore the blocks no longer valid), a message-passing system such as this would not work. As a worker would try to send a request to disc, by the time the disc got the request, the file or block may no longer be there. Having shared-memory would avoid this problem as the worker would be able to see the same information that the disc was currently holding.
 
-To me, assignment 2 would not be implemented that differently from assignment 1. The major difference, in my implementation, would be the removal of shared memory and replaced with copies of the data. 
+Another possible flaw with the message-passing system is the slowdown in performance. Shared memory allows quick access to a wide range of information that is needed between two processes or threads. Having to send a message can sometimes be costly and take longer than simply accessing the memory directly. On the other hand, getting and maintaining locks can be an expensive process. Message-passing also allows the system to have less parts needed to be in parallel.
 
-Here is a diagram showing an abstract view of the message-passing system:
+Here is a diagram showing a high-level abstract view of the message-passing system:
 
 \begin{figure}
 \centering
@@ -65,7 +69,5 @@ Here is a diagram showing an abstract view of the message-passing system:
 \caption{Abstract view of the message-passing implementation of Assignment 1}
 \label{fig:message-passing}
 \end{figure}
-
-Making it message passing could help make asynchronisation easier. becasue can just og off and then be caled with data. would need to store a window of replies. in fact. it would be almost identical to the tcp sliding window protocol.
 
 \end{document}

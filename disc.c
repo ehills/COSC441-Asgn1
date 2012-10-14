@@ -70,7 +70,6 @@ disk_listen(disc_container *disc)
                 /* Quit message is stored here so should only be read once all other write messages have been dealt with */
                 /* In saying that, current implementation only sends quit once all workers have sent their requests anyway. */
             } else if (disc_job->message == QUIT) {
-                printf("Disc processed: %d messages\n", count);
                 pthread_mutex_unlock(&(disc->write_lock)); 
                 return 0;
             }

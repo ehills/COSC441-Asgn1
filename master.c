@@ -21,6 +21,7 @@
 disc_container *discs;  /* Contains location of all disc threads */
 worker *workers;        /* contains location of all worker threads */
 pthread_mutexattr_t attribute;
+pthread_mutex_t *file_locks;
 
 /**
  * Check circular buffer is full
@@ -123,6 +124,7 @@ create_disk_threads(int num_threads)
 int create_worker_threads(int num_threads, int num_disks, int num_iterations) {
     int j;
 
+
     workers = emalloc(sizeof(worker) * num_threads);
     for(j=0; j < num_threads; j++) {
         workers[j].time = j;
@@ -130,6 +132,7 @@ int create_worker_threads(int num_threads, int num_disks, int num_iterations) {
         // TODO don't pass these every time ovbiously..
         workers[j].repetition = num_iterations;
         workers[j].all_discs = discs;
+        workers[j].file_locks = file_locks;
         if (pthread_create(&(workers[j].thread_id), NULL, worker_listen, &workers[j]) != 0) {
             perror("Cannot create thread.");
             return -1; 
@@ -157,6 +160,15 @@ main(int argc, char **argv)
 
     // make disc threads
     create_disk_threads(num_disks);
+
+    file_locks = emalloc(sizeof(pthread_mutex_t) * NUMBER_OF_FILES); 
+    
+    for (j = 0; j < NUMBER_OF_FILES; j++) {
+        if (pthread_mutex_init(&(file_locks[j]), &attribute) != 0) {
+            perror("Cannot initiliase lock");
+            return -1;
+        }
+    }
 
     // create worker threads
     create_worker_threads(num_worker_threads,num_disks, num_iterations);

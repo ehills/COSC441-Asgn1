@@ -73,6 +73,7 @@ typedef struct worker_t {
     int number_of_discs;
     int repetition;
     pthread_t thread_id;
+    pthread_mutex_t *file_locks;
     disc_container *all_discs;
 } worker;
 
