@@ -42,12 +42,11 @@ void seed_rand(struct drand48_data *buffer)
 
 int check_reply(monitor *request, worker *this) {
 
-    while (request->processed == 0) {
-        this->time = max(this->time, request->completion_time);
-        break;
+    while (request->processed != 0) {
+      sched_yield();
     }
+    this->time = max(this->time, request->completion_time);
 
-    //  sched_yield();
     return 0;
 }
 
