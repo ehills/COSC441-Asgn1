@@ -39,10 +39,10 @@ disk_process(monitor *mon, disc_container *this)
     mon->completion_time = this->disc_time;
 
     /* set completed flag */
-    pthread_mutex_lock(&mon->processed_lock);
+    //pthread_mutex_lock(&mon->processed_lock);
     mon->processed = 0;
-    pthread_cond_signal(&mon->processed_cond);
-    pthread_mutex_unlock(&mon->processed_lock);
+    //pthread_cond_signal(&mon->processed_cond);
+    //pthread_mutex_unlock(&mon->processed_lock);
     return 0;
 }
 

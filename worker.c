@@ -30,25 +30,18 @@ void seed_rand(struct drand48_data *buffer)
 /* Will check the monitor and see if the 'done' flag has been set */
 /* This is not ideal and needs to be reimplemented */
 /* This now does not allow the worker to send multiple requests */
-/* Think this is wrong but cannot properly understand documentation */
-/* possible TODO */
-/* My preferred solution is to send all requests to all discs for that file */
-/* then have a queue of replies and process them */
-
-/* Attempted to use yield but did not improve situation */
-/* Will attempt to use signalling with conditions */
+/* FIXME use signalling with conditions */
 int check_reply(monitor *request, worker *this) {
-    pthread_mutex_lock(&request->processed_lock);
+    //pthread_mutex_lock(&request->processed_lock);
+//    pthread_cond_wait(&request->processed_cond, &request->processed_lock);
+//    this->time = max(this->time, request->completion_time);      
+//    pthread_mutex_unlock(&request->processed_lock);
 
-    pthread_cond_wait(&request->processed_cond, &request->processed_lock);
-    this->time = max(this->time, request->completion_time);      
-    pthread_mutex_unlock(&request->processed_lock);
-
-/*    while (request->processed != 0) {
+    while (request->processed != 0) {
       sched_yield();
     }
     this->time = max(this->time, request->completion_time);
-*/
+
     return 0;
 }
 
